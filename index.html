@@ -588,22 +588,61 @@
     };
 
     // --- TWO-WAY GOOGLE SHEETS CLOUD SYNC ENGINE ---
+   // --- TWO-WAY GOOGLE SHEETS CLOUD SYNC ENGINE ---
     async function syncFromCloud() {
       if (!GOOGLE_SHEET_API_URL || GOOGLE_SHEET_API_URL.includes("YOUR_SCRIPT_ID_HERE")) return;
       try {
         const res = await fetch(`${GOOGLE_SHEET_API_URL}?action=getData`);
         const result = await res.json();
         if (result.status === 'success' && result.data) {
-          if (Array.isArray(result.data.slots)) state.publishedSlots = result.data.slots;
-          if (Array.isArray(result.data.lessons)) state.lessons = result.data.lessons;
-          if (Array.isArray(result.data.parents)) state.parents = result.data.parents;
-          if (Array.isArray(result.data.invoices)) state.invoices = result.data.invoices;
+          // Only overwrite local arrays if the cloud actually returned items
+          if (Array.isArray(result.data.slots) && result.data.slots.length > 0) {
+            state.publishedSlots = result.data.slots;
+          } else if (state.publishedSlots.length > 0) {
+            // If cloud is empty but local has slots, push local slots to cloud to seed it
+            syncToCloud();
+          }
+
+          if (Array.isArray(result.data.lessons) && result.data.lessons.length > 0) {
+            state.lessons = result.data.lessons;
+          }
+          if (Array.isArray(result.data.parents) && result.data.parents.length > 0) {
+            state.parents = result.data.parents;
+          }
+          if (Array.isArray(result.data.invoices) && result.data.invoices.length > 0) {
+            state.invoices = result.data.invoices;
+          }
 
           // Re-sync logged-in parent
           if (state.currentParent) {
             const fresh = state.parents.find(p => p.email.toLowerCase() === state.currentParent.email.toLowerCase());
             if (fresh) state.currentParent = fresh;
           }
+
+          saveState();
+
+          // Refresh UI
+          renderCalendarDays();
+          renderOpenSlots();
+          renderScheduledLessons();
+          renderAthleteView();
+          renderCoachDashboardMetrics();
+          renderCoachCalendarDays();
+          renderCoachDaySummary();
+
+          if (!document.getElementById('view-instructor').classList.contains('hidden')) {
+            renderCoachPublishedSlots();
+            renderInvoices();
+            populateCoachStudentSelect();
+          }
+
+          const statusBadge = document.getElementById('cloud-status-text');
+          if (statusBadge) statusBadge.innerText = `Synced (${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })})`;
+        }
+      } catch (err) {
+        console.warn("Cloud sync fetch retry:", err);
+      }
+    }
 
           saveState();
 
