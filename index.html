@@ -97,35 +97,35 @@
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label class="block text-xs font-bold text-slate-700 mb-1">Parent / Guardian Name *</label>
-              <input type="text" id="reg-parent-name" required placeholder="Marcus Rivera Sr." class="w-full px-3 py-2 text-sm rounded-xl border border-slate-300 focus:border-blue-600">
+              <input type="text" id="reg-parent-name" required placeholder="Parent Full Name" class="w-full px-3 py-2 text-sm rounded-xl border border-slate-300 focus:border-blue-600">
             </div>
             <div>
               <label class="block text-xs font-bold text-slate-700 mb-1">Phone Number *</label>
-              <input type="tel" id="reg-parent-phone" required placeholder="(832) 555-0182" class="w-full px-3 py-2 text-sm rounded-xl border border-slate-300">
+              <input type="tel" id="reg-parent-phone" required placeholder="(346) 555-0100" class="w-full px-3 py-2 text-sm rounded-xl border border-slate-300">
             </div>
           </div>
           <div>
             <label class="block text-xs font-bold text-slate-700 mb-1">Parent Email *</label>
-            <input type="email" id="reg-parent-email" required placeholder="rivera@example.com" class="w-full px-3 py-2 text-sm rounded-xl border border-slate-300">
+            <input type="email" id="reg-parent-email" required placeholder="parent@example.com" class="w-full px-3 py-2 text-sm rounded-xl border border-slate-300">
           </div>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label class="block text-xs font-bold text-slate-700 mb-1">Athlete 1 (Full Name) *</label>
-              <input type="text" id="reg-athlete-1" required placeholder="Marcus Rivera" class="w-full px-3 py-2 text-sm rounded-xl border border-slate-300">
+              <input type="text" id="reg-athlete-1" required placeholder="Athlete Full Name" class="w-full px-3 py-2 text-sm rounded-xl border border-slate-300">
             </div>
             <div>
               <label class="block text-xs font-bold text-slate-700 mb-1">Age / Level</label>
-              <input type="text" id="reg-athlete-1-level" placeholder="13U Majors / Hitting" class="w-full px-3 py-2 text-sm rounded-xl border border-slate-300">
+              <input type="text" id="reg-athlete-1-level" placeholder="e.g. 12U Majors / Hitting" class="w-full px-3 py-2 text-sm rounded-xl border border-slate-300">
             </div>
           </div>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label class="block text-xs font-bold text-slate-700 mb-1">Athlete 2 (Sibling - Optional)</label>
-              <input type="text" id="reg-athlete-2" placeholder="Lucas Rivera" class="w-full px-3 py-2 text-sm rounded-xl border border-slate-300">
+              <input type="text" id="reg-athlete-2" placeholder="Sibling Name (if applicable)" class="w-full px-3 py-2 text-sm rounded-xl border border-slate-300">
             </div>
             <div>
               <label class="block text-xs font-bold text-slate-700 mb-1">Age / Level</label>
-              <input type="text" id="reg-athlete-2-level" placeholder="10U AAA" class="w-full px-3 py-2 text-sm rounded-xl border border-slate-300">
+              <input type="text" id="reg-athlete-2-level" placeholder="e.g. 9U AAA" class="w-full px-3 py-2 text-sm rounded-xl border border-slate-300">
             </div>
           </div>
           <div>
@@ -148,16 +148,16 @@
             </div>
             <div>
               <div class="flex items-center space-x-2">
-                <span id="active-parent-name" class="font-extrabold text-sm text-slate-900">Marcus Rivera Family</span>
+                <span id="active-parent-name" class="font-extrabold text-sm text-slate-900">Family Account</span>
                 <span class="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">Active Account</span>
               </div>
-              <p id="active-parent-athletes" class="text-xs text-slate-500">Athletes: Marcus Rivera (13U), Lucas Rivera (10U)</p>
+              <p id="active-parent-athletes" class="text-xs text-slate-500">Registered Athletes</p>
             </div>
           </div>
           <div class="flex items-center space-x-3">
             <div class="text-right">
               <span class="text-[11px] font-semibold text-slate-500 block">Available Credits</span>
-              <span id="parent-credit-badge" class="text-sm font-extrabold text-blue-600">3.0 Credits (30d active)</span>
+              <span id="parent-credit-badge" class="text-sm font-extrabold text-blue-600">0.0 Credits</span>
             </div>
             <button onclick="handleParentLogout()" class="px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-100">
               Sign Out
@@ -184,8 +184,8 @@
           <!-- Month & Week Navigation -->
           <div class="flex flex-wrap items-center justify-between gap-4 bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
             <div class="flex items-center space-x-3">
-              <h3 id="calendar-header-title" class="text-lg font-black tracking-tight text-slate-900">November 2026</h3>
-              <span class="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">Current Schedule</span>
+              <h3 id="calendar-header-title" class="text-lg font-black tracking-tight text-slate-900">Current Schedule</h3>
+              <span class="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">Live Calendar</span>
             </div>
             <div class="flex items-center space-x-2">
               <button onclick="navigateCalendarMonth(-1)" class="p-2 rounded-lg border border-slate-200 text-xs font-bold hover:bg-slate-100">‹ Prev Month</button>
@@ -208,7 +208,7 @@
           <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4">
             <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
               <div>
-                <h4 id="selected-day-slots-heading" class="text-base font-black text-slate-900">Open Lesson Slots: Wednesday, Nov 4, 2026</h4>
+                <h4 id="selected-day-slots-heading" class="text-base font-black text-slate-900">Open Lesson Slots</h4>
                 <p class="text-xs text-slate-500">Pick an open lesson time below. Cancelled slots repopulate automatically in real time.</p>
               </div>
               <span class="text-xs font-bold text-slate-600">Rate: $100/hr • $150/90m • $200/2hr</span>
@@ -232,7 +232,7 @@
               </div>
             </div>
             <div id="parent-scheduled-lessons-list" class="space-y-3">
-              <!-- Dynamically populated scheduled lessons with 1-click Google Cal and Cancel -->
+              <!-- Dynamically populated scheduled lessons -->
             </div>
           </div>
         </div>
@@ -242,7 +242,7 @@
           <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-6">
             <div>
               <h4 class="text-base font-black text-slate-900">Lesson Credits & Packages</h4>
-              <p class="text-xs text-slate-500">Select a training package below. Packages carry a 30-day validity window from purchase.</p>
+              <p class="text-xs text-slate-500">Select a training package below. Venmo (@Richard-James-256) or Zelle (346-660-1074) to activate.</p>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div class="rounded-2xl border border-slate-200 p-5 space-y-3 hover:border-blue-500 transition">
@@ -265,7 +265,7 @@
               <div class="rounded-2xl border border-slate-200 p-5 space-y-3 hover:border-blue-500 transition">
                 <span class="text-xs font-extrabold uppercase text-slate-400">Elite 8-Pack</span>
                 <div class="text-2xl font-black text-slate-900">$720 <span class="text-xs font-normal text-slate-500">/ 8 Credits</span></div>
-                <p class="text-xs text-slate-600">Comprehensive development block. Saves $80 with full video analysis notes.</p>
+                <p class="text-xs text-slate-600">Comprehensive development block. Saves $80 with full mechanics focus.</p>
                 <button onclick="promptPackagePurchase(8, 720)" class="w-full py-2 bg-slate-900 text-white rounded-xl text-xs font-bold hover:bg-slate-800">
                   Buy 8-Session Pack
                 </button>
@@ -288,18 +288,18 @@
             ⚾
           </div>
           <div>
-            <h2 id="athlete-display-name" class="text-xl font-black text-slate-900">Marcus Rivera</h2>
-            <p id="athlete-display-level" class="text-xs text-slate-500">13U Majors • Hitting & Fielding Focus</p>
+            <h2 id="athlete-display-name" class="text-xl font-black text-slate-900">Athlete Profile</h2>
+            <p id="athlete-display-level" class="text-xs text-slate-500">RJ Baseball Performance Athlete</p>
           </div>
         </div>
         <div class="flex items-center space-x-3">
           <div class="px-4 py-2 rounded-xl bg-slate-100 text-center">
             <span class="text-[10px] font-bold text-slate-500 block uppercase">Sessions Completed</span>
-            <span id="athlete-completed-count" class="text-lg font-black text-slate-900">14</span>
+            <span id="athlete-completed-count" class="text-lg font-black text-slate-900">0</span>
           </div>
           <div class="px-4 py-2 rounded-xl bg-blue-50 border border-blue-200 text-center">
             <span class="text-[10px] font-bold text-blue-700 block uppercase">Remaining Credits</span>
-            <span id="athlete-credits-count" class="text-lg font-black text-blue-700">3.0</span>
+            <span id="athlete-credits-count" class="text-lg font-black text-blue-700">0.0</span>
           </div>
         </div>
       </div>
@@ -321,7 +321,7 @@
       <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm flex flex-wrap items-center justify-between gap-4">
         <div>
           <h2 class="text-xl font-black text-slate-900">Coach RJ Command Center</h2>
-          <p class="text-xs text-slate-500">Manage lesson slots, schedule one-by-one, and settle payments.</p>
+          <p class="text-xs text-slate-500">Manage lesson slots, schedule direct lessons, and confirm Venmo/Zelle payments.</p>
         </div>
         <div class="flex items-center space-x-1 bg-slate-100 p-1 rounded-xl text-xs font-bold">
           <button id="coach-tab-slots" onclick="switchCoachSubTab('slots')" class="px-3 py-1.5 rounded-lg bg-white text-slate-900 shadow-sm">
@@ -417,8 +417,8 @@
               <label class="block font-bold text-slate-700 mb-1">Payment Method</label>
               <select id="direct-book-payment" class="w-full px-3 py-2 border rounded-xl font-semibold">
                 <option value="credit">Deduct Package Credit</option>
-                <option value="venmo">Venmo (@RJ-Baseball)</option>
-                <option value="zelle">Zelle ((512) 555-0199)</option>
+                <option value="venmo">Venmo (@Richard-James-256)</option>
+                <option value="zelle">Zelle (346-660-1074)</option>
                 <option value="cash">Cash at Session</option>
               </select>
             </div>
@@ -434,7 +434,7 @@
         <div class="flex items-center justify-between border-b border-slate-100 pb-3">
           <div>
             <h4 class="text-base font-black text-slate-900">Lesson Invoices & Payment Confirmations</h4>
-            <p class="text-xs text-slate-500">1-click confirm Venmo, Zelle, or cash payments.</p>
+            <p class="text-xs text-slate-500">Confirm Venmo (@Richard-James-256), Zelle (346-660-1074 - Richard James), or cash payments.</p>
           </div>
         </div>
         <div id="coach-invoices-feed" class="space-y-2">
@@ -457,13 +457,13 @@
 
       <div class="space-y-3 text-xs">
         <div class="bg-slate-50 p-3 rounded-xl border border-slate-200">
-          <div class="font-extrabold text-slate-800 text-sm" id="modal-slot-datetime">Wednesday, Nov 4 @ 4:00 PM</div>
+          <div class="font-extrabold text-slate-800 text-sm" id="modal-slot-datetime">Upcoming Lesson</div>
           <div class="text-slate-500" id="modal-slot-location">RJ Baseball Performance Facility</div>
         </div>
 
         <div>
-          <label class="block font-bold text-slate-700 mb-1">Athlete</label>
-          <select id="modal-select-athlete" class="w-full px-3 py-2 border rounded-xl font-semibold"></select>
+          <label class="block font-bold text-slate-700 mb-1">Select Athlete for this Session</label>
+          <select id="modal-select-athlete" class="w-full px-3 py-2 border rounded-xl font-semibold bg-white text-slate-900"></select>
         </div>
 
         <div>
@@ -478,9 +478,9 @@
         <div>
           <label class="block font-bold text-slate-700 mb-1">Payment Method</label>
           <select id="modal-select-payment" class="w-full px-3 py-2 border rounded-xl font-semibold">
-            <option value="credit">Use Active Credit (1.0 Credit)</option>
-            <option value="venmo">Venmo (@RJ-Baseball)</option>
-            <option value="zelle">Zelle ((512) 555-0199)</option>
+            <option value="credit">Use Active Credit</option>
+            <option value="venmo">Venmo (@Richard-James-256)</option>
+            <option value="zelle">Zelle (346-660-1074 - Richard James)</option>
             <option value="cash">Pay Cash at Session</option>
           </select>
         </div>
@@ -518,78 +518,53 @@
   <!-- JAVASCRIPT APPLICATION CORE                -->
   <!-- ========================================== -->
   <script>
-    // INITIAL STATE WITH CURRENT AUTOMATIC CALENDAR DATE
-    const CURRENT_SYSTEM_DATE = '2026-11-04'; // Wednesday, Nov 4, 2026
+    // System dynamic date
+    const todayObj = new Date();
+    const pad = n => String(n).padStart(2, '0');
+    const CURRENT_SYSTEM_DATE = `${todayObj.getFullYear()}-${pad(todayObj.getMonth() + 1)}-${pad(todayObj.getDate())}`;
+
+    // Security PIN for Coach RJ
+    const COACH_SECURITY_PIN = "Ballislife123!";
     
     let state = {
-      userRole: 'parent', // 'parent' or 'instructor'
-      currentParent: null, // Logged in parent
+      userRole: 'parent',
+      currentParent: null,
       selectedCalDate: CURRENT_SYSTEM_DATE,
-      currentCalYear: 2026,
-      currentCalMonth: 10, // 0-indexed (10 = November)
+      currentCalYear: todayObj.getFullYear(),
+      currentCalMonth: todayObj.getMonth(),
       activeDuration: 60,
       activeSlotIdForBooking: null,
       activeLessonIdToCancel: null,
       
-      // Registered Accounts
-      parents: [
-        {
-          id: 'P-101',
-          name: 'Marcus Rivera Sr.',
-          email: 'rivera@example.com',
-          pin: '1234',
-          credits: 3.0,
-          creditExpires: '2026-12-04',
-          athletes: [
-            { id: 'ATH-1', name: 'Marcus Rivera', level: '13U Majors' },
-            { id: 'ATH-2', name: 'Lucas Rivera', level: '10U AAA' }
-          ]
-        }
-      ],
+      // Dynamic Registered Accounts
+      parents: [],
 
       // Published slots open for booking
       publishedSlots: [
-        { id: 'SLOT-1', date: '2026-11-04', time: '15:30', status: 'open' },
-        { id: 'SLOT-2', date: '2026-11-04', time: '16:45', status: 'open' },
-        { id: 'SLOT-3', date: '2026-11-04', time: '18:00', status: 'open' },
-        { id: 'SLOT-4', date: '2026-11-05', time: '16:00', status: 'open' },
-        { id: 'SLOT-5', date: '2026-11-05', time: '17:15', status: 'open' },
-        { id: 'SLOT-6', date: '2026-11-06', time: '15:30', status: 'open' }
+        { id: 'SLOT-1', date: CURRENT_SYSTEM_DATE, time: '15:30', status: 'open' },
+        { id: 'SLOT-2', date: CURRENT_SYSTEM_DATE, time: '16:45', status: 'open' },
+        { id: 'SLOT-3', date: CURRENT_SYSTEM_DATE, time: '18:00', status: 'open' }
       ],
 
       // Booked Lessons
-      lessons: [
-        {
-          id: 'LES-901',
-          slotId: 'SLOT-X1',
-          date: '2026-11-04',
-          time: '14:00',
-          duration: 60,
-          athleteName: 'Marcus Rivera',
-          parentEmail: 'rivera@example.com',
-          paymentStatus: 'paid_credit',
-          price: 100
-        }
-      ],
+      lessons: [],
 
       // Invoices
-      invoices: [
-        { id: 'INV-101', date: '2026-11-04', athleteName: 'Marcus Rivera', amount: 100, method: 'Credit', status: 'Paid' }
-      ]
+      invoices: []
     };
 
-    // Load from LocalStorage if available
+    // Load from LocalStorage
     function loadState() {
       const saved = localStorage.getItem('lessonflow_state_rj');
       if (saved) {
         try {
           const parsed = JSON.parse(saved);
-          state.parents = parsed.parents || state.parents;
-          state.publishedSlots = parsed.publishedSlots || state.publishedSlots;
-          state.lessons = parsed.lessons || state.lessons;
-          state.invoices = parsed.invoices || state.invoices;
+          state.parents = parsed.parents || [];
+          state.publishedSlots = (parsed.publishedSlots && parsed.publishedSlots.length > 0) ? parsed.publishedSlots : state.publishedSlots;
+          state.lessons = parsed.lessons || [];
+          state.invoices = parsed.invoices || [];
           if (parsed.currentParent) {
-            state.currentParent = state.parents.find(p => p.email === parsed.currentParent.email) || parsed.currentParent;
+            state.currentParent = state.parents.find(p => p.email.toLowerCase() === parsed.currentParent.email.toLowerCase()) || null;
           }
         } catch (e) {
           console.error('Error loading state:', e);
@@ -609,7 +584,6 @@
 
     // MAIN NAVIGATION & STRICT ROLE VIEW GUARD
     function switchMainView(view) {
-      // Parents & Athletes can only see parent and athlete views
       document.getElementById('view-parent').classList.add('hidden');
       document.getElementById('view-athlete').classList.add('hidden');
       document.getElementById('view-instructor').classList.add('hidden');
@@ -639,7 +613,7 @@
     // PIN Protection for Coach Command Center
     function promptInstructorAccess() {
       const pin = prompt('Enter Coach RJ Security PIN:');
-      if (pin === '1234') {
+      if (pin === COACH_SECURITY_PIN) {
         switchMainView('instructor');
       } else if (pin !== null) {
         alert('Incorrect PIN. Access restricted to Coach RJ.');
@@ -695,13 +669,18 @@
       const athletes = [{ id: 'ATH-' + Date.now(), name: a1, level: a1Level }];
       if (a2) athletes.push({ id: 'ATH-' + (Date.now() + 1), name: a2, level: a2Level || 'Youth Baseball' });
 
+      // Expiration 30 days from now
+      const expDate = new Date();
+      expDate.setDate(expDate.getDate() + 30);
+      const expDateStr = `${expDate.getFullYear()}-${pad(expDate.getMonth() + 1)}-${pad(expDate.getDate())}`;
+
       const newParent = {
         id: 'P-' + Date.now(),
         name: name,
         email: email,
         pin: pin,
-        credits: 1.0, // Complimentary trial credit
-        creditExpires: '2026-12-04',
+        credits: 0.0,
+        creditExpires: expDateStr,
         athletes: athletes
       };
 
@@ -728,9 +707,9 @@
       document.getElementById('parent-auth-card').classList.add('hidden');
       document.getElementById('parent-authenticated-content').classList.remove('hidden');
 
-      document.getElementById('active-parent-name').innerText = state.currentParent.name + ' Family';
-      const names = state.currentParent.athletes.map(a => `${a.name} (${a.level})`).join(', ');
-      document.getElementById('active-parent-athletes').innerText = 'Athletes: ' + names;
+      document.getElementById('active-parent-name').innerText = state.currentParent.name;
+      const athleteSummary = (state.currentParent.athletes || []).map(a => `${a.name} (${a.level})`).join(', ');
+      document.getElementById('active-parent-athletes').innerText = 'Athletes: ' + (athleteSummary || 'None registered');
       document.getElementById('parent-credit-badge').innerText = `${state.currentParent.credits.toFixed(1)} Credits (Valid thru ${state.currentParent.creditExpires})`;
 
       renderCalendarDays();
@@ -750,11 +729,12 @@
       if (tab === 'history') renderScheduledLessons();
     }
 
-    // AUTOMATIC CALENDAR LOGIC (Dynamically centered around Nov 2026)
+    // CALENDAR LOGIC
     function jumpToCurrentToday() {
       state.selectedCalDate = CURRENT_SYSTEM_DATE;
-      state.currentCalYear = 2026;
-      state.currentCalMonth = 10;
+      const d = new Date();
+      state.currentCalYear = d.getFullYear();
+      state.currentCalMonth = d.getMonth();
       renderCalendarDays();
       renderOpenSlots();
     }
@@ -781,16 +761,14 @@
       const firstDay = new Date(state.currentCalYear, state.currentCalMonth, 1).getDay();
       const daysInMonth = new Date(state.currentCalYear, state.currentCalMonth + 1, 0).getDate();
 
-      // Leading blanks
       for (let i = 0; i < firstDay; i++) {
         const blank = document.createElement('div');
         blank.className = 'h-14 sm:h-16 rounded-xl bg-slate-50 border border-transparent';
         grid.appendChild(blank);
       }
 
-      // Populate days
       for (let day = 1; day <= daysInMonth; day++) {
-        const dateStr = `${state.currentCalYear}-${String(state.currentCalMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        const dateStr = `${state.currentCalYear}-${pad(state.currentCalMonth + 1)}-${pad(day)}`;
         const hasOpenSlots = state.publishedSlots.some(s => s.date === dateStr && s.status === 'open');
         const isSelected = state.selectedCalDate === dateStr;
         const isToday = dateStr === CURRENT_SYSTEM_DATE;
@@ -863,24 +841,36 @@
       });
     }
 
-    // BOOKING MODAL LOGIC
+    // BOOKING MODAL LOGIC (FIXED: Populates strictly from current logged in parent's athlete list)
     function openBookModal(slotId) {
-      if (!state.currentParent) return;
+      if (!state.currentParent) {
+        alert("Please sign in or register to book a lesson slot.");
+        return;
+      }
       state.activeSlotIdForBooking = slotId;
       const slot = state.publishedSlots.find(s => s.id === slotId);
       if (!slot) return;
 
       document.getElementById('modal-slot-datetime').innerText = `${slot.date} @ ${formatTimeDisplay(slot.time)}`;
 
-      // Populate athlete dropdown
+      // Strict user-specific athlete population
       const sel = document.getElementById('modal-select-athlete');
       sel.innerHTML = '';
-      state.currentParent.athletes.forEach(a => {
+      
+      const athletes = state.currentParent.athletes || [];
+      if (athletes.length === 0) {
         const opt = document.createElement('option');
-        opt.value = a.name;
-        opt.innerText = `${a.name} (${a.level})`;
+        opt.value = state.currentParent.name;
+        opt.innerText = state.currentParent.name;
         sel.appendChild(opt);
-      });
+      } else {
+        athletes.forEach(a => {
+          const opt = document.createElement('option');
+          opt.value = a.name;
+          opt.innerText = `${a.name} (${a.level || 'Athlete'})`;
+          sel.appendChild(opt);
+        });
+      }
 
       setModalDuration(60);
       document.getElementById('modal-book-slot').classList.remove('hidden');
@@ -923,7 +913,7 @@
       // Mark slot as booked
       slot.status = 'booked';
 
-      // Create Lesson
+      // Create Lesson linked to the logged-in parent and selected athlete
       const newLesson = {
         id: 'LES-' + Date.now(),
         slotId: slot.id,
@@ -943,6 +933,7 @@
         id: 'INV-' + Date.now().toString().slice(-4),
         date: slot.date,
         athleteName: athlete,
+        parentEmail: state.currentParent.email,
         amount: cost,
         method: paymentMethod.toUpperCase(),
         status: paymentMethod === 'credit' ? 'Paid' : 'Unpaid'
@@ -960,7 +951,7 @@
       container.innerHTML = '';
 
       if (!state.currentParent) return;
-      const parentLessons = state.lessons.filter(l => l.parentEmail === state.currentParent.email);
+      const parentLessons = state.lessons.filter(l => l.parentEmail.toLowerCase() === state.currentParent.email.toLowerCase());
 
       if (parentLessons.length === 0) {
         container.innerHTML = `<div class="p-6 text-center text-slate-400 border border-dashed rounded-xl">No scheduled lessons right now.</div>`;
@@ -980,7 +971,7 @@
                 ${l.paymentStatus.includes('paid') ? '✓ Paid' : '⏳ Payment Due'}
               </span>
             </div>
-            <p class="text-xs text-slate-500 mt-1">Athlete: <b>${l.athleteName}</b> • Coach RJ Baseball Facility</p>
+            <p class="text-xs text-slate-500 mt-1">Athlete: <b>${l.athleteName}</b> • RJ Baseball Performance</p>
           </div>
           <div class="flex items-center space-x-2">
             <a href="${gCalUrl}" target="_blank" class="px-3 py-1.5 rounded-lg border border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100 text-xs font-bold">
@@ -1003,10 +994,9 @@
 
       const modalContent = document.getElementById('cancel-modal-content');
       
-      // Calculate 24-hr advance notice
       const lessonDateTime = new Date(`${lesson.date}T${lesson.time}:00`);
-      const currentDateTime = new Date(`${CURRENT_SYSTEM_DATE}T12:00:00`);
-      const diffHours = (lessonDateTime - currentDateTime) / (1000 * 60 * 60);
+      const now = new Date();
+      const diffHours = (lessonDateTime - now) / (1000 * 60 * 60);
 
       const isEligibleForReload = diffHours >= 24;
 
@@ -1018,7 +1008,7 @@
         <div class="p-3 rounded-xl ${isEligibleForReload ? 'bg-emerald-50 border border-emerald-200 text-emerald-800' : 'bg-amber-50 border border-amber-200 text-amber-800'}">
           <p class="font-bold">${isEligibleForReload ? '✓ Full Credit Reload Available' : '⚠️ Late Notice Notice (< 24 Hours)'}</p>
           <p class="mt-1">${isEligibleForReload 
-            ? 'This cancellation is more than 24 hours in advance. Your credit will be immediately refunded to your balance and the time slot will be reopened for other players.' 
+            ? 'This cancellation is more than 24 hours in advance. Your credit will reload immediately and the time slot will be reopened for other players.' 
             : 'Per studio policy, cancellations under 24 hours forfeit session credit. The slot will repopulate on the calendar immediately.'}
           </p>
         </div>
@@ -1037,22 +1027,20 @@
       const lesson = state.lessons.find(l => l.id === lessonId);
       if (!lesson) return;
 
-      // 1. Reload credit if eligible
       const lessonDateTime = new Date(`${lesson.date}T${lesson.time}:00`);
-      const currentDateTime = new Date(`${CURRENT_SYSTEM_DATE}T12:00:00`);
-      const diffHours = (lessonDateTime - currentDateTime) / (1000 * 60 * 60);
+      const now = new Date();
+      const diffHours = (lessonDateTime - now) / (1000 * 60 * 60);
 
       if (diffHours >= 24 && lesson.paymentStatus === 'paid_credit') {
-        const parent = state.parents.find(p => p.email === lesson.parentEmail);
+        const parent = state.parents.find(p => p.email.toLowerCase() === lesson.parentEmail.toLowerCase());
         if (parent) parent.credits += (lesson.duration / 60);
       }
 
-      // 2. AUTOMATIC SLOT REPOPULATION
+      // Slot repopulates automatically
       const originalSlot = state.publishedSlots.find(s => s.id === lesson.slotId);
       if (originalSlot) {
-        originalSlot.status = 'open'; // Repopulated!
+        originalSlot.status = 'open';
       } else {
-        // If it was a custom direct booked slot, repopulate as open slot
         state.publishedSlots.push({
           id: 'SLOT-REPO-' + Date.now(),
           date: lesson.date,
@@ -1061,33 +1049,38 @@
         });
       }
 
-      // 3. Remove lesson from active lessons
       state.lessons = state.lessons.filter(l => l.id !== lessonId);
 
       saveState();
       closeCancelModal();
       renderParentPortalSession();
-      alert('Lesson cancelled. The time slot has repopulated on the booking calendar for other parents.');
+      alert('Lesson cancelled. The time slot has repopulated on the booking calendar.');
     }
 
     // ATHLETE VIEW LOGIC
     function renderAthleteView() {
-      if (!state.currentParent || state.currentParent.athletes.length === 0) {
-        document.getElementById('athlete-display-name').innerText = 'Marcus Rivera';
+      if (!state.currentParent || !state.currentParent.athletes || state.currentParent.athletes.length === 0) {
+        document.getElementById('athlete-display-name').innerText = 'No Athlete Selected';
+        document.getElementById('athlete-display-level').innerText = 'Please log into your parent account';
+        document.getElementById('athlete-credits-count').innerText = '0.0';
+        document.getElementById('athlete-completed-count').innerText = '0';
+        document.getElementById('athlete-lessons-feed').innerHTML = `<div class="p-6 text-center text-slate-400 border border-dashed rounded-xl">Please sign in to your parent account to view athlete schedule.</div>`;
         return;
       }
 
       const ath = state.currentParent.athletes[0];
       document.getElementById('athlete-display-name').innerText = ath.name;
-      document.getElementById('athlete-display-level').innerText = ath.level + ' • RJ Baseball Athlete';
+      document.getElementById('athlete-display-level').innerText = (ath.level || 'Athlete') + ' • RJ Baseball Performance';
       document.getElementById('athlete-credits-count').innerText = state.currentParent.credits.toFixed(1);
 
       const feed = document.getElementById('athlete-lessons-feed');
       feed.innerHTML = '';
-      const upcoming = state.lessons.filter(l => l.athleteName === ath.name);
+      const upcoming = state.lessons.filter(l => l.parentEmail.toLowerCase() === state.currentParent.email.toLowerCase());
+
+      document.getElementById('athlete-completed-count').innerText = upcoming.length;
 
       if (upcoming.length === 0) {
-        feed.innerHTML = `<div class="p-6 text-center text-slate-400 border border-dashed rounded-xl">No upcoming sessions. Check with your parent to book.</div>`;
+        feed.innerHTML = `<div class="p-6 text-center text-slate-400 border border-dashed rounded-xl">No upcoming sessions. Book a slot from the Parent Booking tab.</div>`;
         return;
       }
 
@@ -1097,7 +1090,7 @@
         card.innerHTML = `
           <div>
             <span class="font-extrabold text-sm text-slate-900">${l.date} @ ${formatTimeDisplay(l.time)}</span>
-            <p class="text-xs text-slate-500">${l.duration} Min Private Training • Hitting Mechanics</p>
+            <p class="text-xs text-slate-500">${l.duration} Min Private Training • Athlete: ${l.athleteName}</p>
           </div>
           <span class="text-xs bg-blue-100 text-blue-800 font-extrabold px-3 py-1 rounded-full">Confirmed</span>
         `;
@@ -1120,7 +1113,6 @@
     }
 
     function renderCoachView() {
-      // Set default date input to current system date
       document.getElementById('slot-pub-date').value = CURRENT_SYSTEM_DATE;
       document.getElementById('direct-book-date').value = CURRENT_SYSTEM_DATE;
       renderCoachPublishedSlots();
@@ -1184,8 +1176,14 @@
     function populateCoachStudentSelect() {
       const sel = document.getElementById('direct-book-student');
       sel.innerHTML = '';
+      if (state.parents.length === 0) {
+        const opt = document.createElement('option');
+        opt.innerText = 'No registered parents yet';
+        sel.appendChild(opt);
+        return;
+      }
       state.parents.forEach(p => {
-        p.athletes.forEach(a => {
+        (p.athletes || []).forEach(a => {
           const opt = document.createElement('option');
           opt.value = `${a.name}|${p.email}`;
           opt.innerText = `${a.name} (${p.name} - ${p.email})`;
@@ -1197,6 +1195,10 @@
     function handleCoachDirectBook(e) {
       e.preventDefault();
       const studentVal = document.getElementById('direct-book-student').value;
+      if (!studentVal || !studentVal.includes('|')) {
+        alert("Please select a registered athlete.");
+        return;
+      }
       const [athleteName, parentEmail] = studentVal.split('|');
       const date = document.getElementById('direct-book-date').value;
       const time = document.getElementById('direct-book-time').value;
@@ -1222,6 +1224,7 @@
         id: 'INV-' + Date.now().toString().slice(-4),
         date: date,
         athleteName: athleteName,
+        parentEmail: parentEmail,
         amount: price,
         method: payment.toUpperCase(),
         status: payment === 'credit' ? 'Paid' : 'Unpaid'
@@ -1234,6 +1237,10 @@
     function renderInvoices() {
       const feed = document.getElementById('coach-invoices-feed');
       feed.innerHTML = '';
+      if (state.invoices.length === 0) {
+        feed.innerHTML = `<div class="p-6 text-center text-slate-400 border border-dashed rounded-xl">No invoices generated yet.</div>`;
+        return;
+      }
       state.invoices.forEach(inv => {
         const row = document.createElement('div');
         row.className = 'p-3 rounded-xl border border-slate-200 flex items-center justify-between text-xs';
@@ -1245,7 +1252,7 @@
           <div class="flex items-center space-x-3">
             <span class="font-black text-slate-900">$${inv.amount}</span>
             <span class="px-2 py-0.5 rounded-full font-bold ${inv.status === 'Paid' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}">${inv.status}</span>
-            ${inv.status !== 'Paid' ? `<button onclick="confirmInvoicePaid('${inv.id}')" class="px-2 py-1 rounded bg-emerald-600 text-white font-bold text-[10px]">✓ Confirm</button>` : ''}
+            ${inv.status !== 'Paid' ? `<button onclick="confirmInvoicePaid('${inv.id}')" class="px-2 py-1 rounded bg-emerald-600 text-white font-bold text-[10px]">✓ Confirm Payment</button>` : ''}
           </div>
         `;
         feed.appendChild(row);
@@ -1257,6 +1264,33 @@
       if (inv) inv.status = 'Paid';
       saveState();
       renderInvoices();
+    }
+
+    function promptPackagePurchase(credits, price) {
+      if (!state.currentParent) {
+        alert("Please log in or register before buying a package.");
+        return;
+      }
+      const confirmed = confirm(
+        `Purchase ${credits} Lesson Credit(s) for $${price}?\n\n` +
+        `Send payment via:\n` +
+        `• Venmo: @Richard-James-256\n` +
+        `• Zelle: 346-660-1074 (Richard James)\n\n` +
+        `Click OK once payment is initiated.`
+      );
+      if (confirmed) {
+        state.invoices.unshift({
+          id: 'INV-PKG-' + Date.now().toString().slice(-4),
+          date: CURRENT_SYSTEM_DATE,
+          athleteName: state.currentParent.name,
+          parentEmail: state.currentParent.email,
+          amount: price,
+          method: 'PACKAGE_PENDING',
+          status: 'Unpaid'
+        });
+        saveState();
+        alert("Invoice generated! Coach RJ will confirm your payment and activate your credits.");
+      }
     }
 
     // GOOGLE CALENDAR LINK BUILDER
@@ -1288,7 +1322,6 @@
     // INITIALIZATION ON LOAD
     window.onload = function() {
       loadState();
-      // Start in Parent Booking view
       switchMainView('parent');
       renderParentPortalSession();
     };
