@@ -572,6 +572,40 @@
     // PASTE YOUR DEPLOYED GOOGLE APPS SCRIPT WEB APP URL HERE:
     const GOOGLE_SHEET_API_URL = "https://script.google.com/macros/s/AKfycbxiadyhn8h2FHxoH9chKsoHXAYUgyJu4H67UGEH8Z39bCh4MWjFaHouJRgFIrxxMQqklg/exec";
 
+    // Date & Time Normalizers (Prevents Google Sheets timestamp corruption)
+    function normalizeDateString(dateVal) {
+      if (!dateVal) return '';
+      if (typeof dateVal === 'string') {
+        if (dateVal.includes('T')) return dateVal.split('T')[0];
+        if (dateVal.match(/^\d{4}-\d{2}-\d{2}$/)) return dateVal;
+      }
+      try {
+        const d = new Date(dateVal);
+        if (!isNaN(d.getTime())) {
+          return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+        }
+      } catch(e){}
+      return String(dateVal).slice(0, 10);
+    }
+
+    function normalizeTimeString(timeVal) {
+      if (!timeVal) return '12:00';
+      const str = String(timeVal).trim();
+      // If it's already HH:MM
+      const hmMatch = str.match(/(\d{1,2}):(\d{2})/);
+      if (hmMatch && !str.includes('T') && !str.includes('GMT')) {
+        return `${pad(hmMatch[1])}:${hmMatch[2]}`;
+      }
+      // If full date-time string from sheet
+      try {
+        const d = new Date(timeVal);
+        if (!isNaN(d.getTime())) {
+          return `${pad(d.getHours())}:${pad(d.getMinutes())}`;
+        }
+      } catch(e){}
+      return str.slice(0, 5);
+    }
+
     let state = {
       userRole: 'parent',
       currentParent: null,
@@ -599,13 +633,21 @@
         const result = await res.json();
         if (result.status === 'success' && result.data) {
           if (Array.isArray(result.data.slots) && result.data.slots.length > 0) {
-            state.publishedSlots = result.data.slots;
+            state.publishedSlots = result.data.slots.map(s => ({
+              ...s,
+              date: normalizeDateString(s.date),
+              time: normalizeTimeString(s.time)
+            }));
           } else if (state.publishedSlots.length > 0) {
             syncToCloud();
           }
 
           if (Array.isArray(result.data.lessons) && result.data.lessons.length > 0) {
-            state.lessons = result.data.lessons;
+            state.lessons = result.data.lessons.map(l => ({
+              ...l,
+              date: normalizeDateString(l.date),
+              time: normalizeTimeString(l.time)
+            }));
           }
           if (Array.isArray(result.data.parents) && result.data.parents.length > 0) {
             state.parents = result.data.parents;
@@ -671,8 +713,20 @@
         try {
           const parsed = JSON.parse(saved);
           state.parents = parsed.parents || [];
-          state.publishedSlots = (parsed.publishedSlots && parsed.publishedSlots.length > 0) ? parsed.publishedSlots : state.publishedSlots;
-          state.lessons = parsed.lessons || [];
+          if (parsed.publishedSlots && parsed.publishedSlots.length > 0) {
+            state.publishedSlots = parsed.publishedSlots.map(s => ({
+              ...s,
+              date: normalizeDateString(s.date),
+              time: normalizeTimeString(s.time)
+            }));
+          }
+          if (parsed.lessons) {
+            state.lessons = parsed.lessons.map(l => ({
+              ...l,
+              date: normalizeDateString(l.date),
+              time: normalizeTimeString(l.time)
+            }));
+          }
           state.invoices = parsed.invoices || [];
           if (parsed.currentParent) {
             state.currentParent = state.parents.find(p => p.email.toLowerCase() === parsed.currentParent.email.toLowerCase()) || null;
@@ -722,7 +776,6 @@
       }
     }
 
-    // PIN Protection for Coach Command Center (Robust prompt with trim verification)
     function promptInstructorAccess() {
       const pin = prompt('Enter Coach RJ Security PIN:');
       if (pin !== null && pin.trim() === COACH_SECURITY_PIN) {
@@ -785,7 +838,6 @@
       expDate.setDate(expDate.getDate() + 30);
       const expDateStr = `${expDate.getFullYear()}-${pad(expDate.getMonth() + 1)}-${pad(expDate.getDate())}`;
 
-      // Strictly initialized to 0 credits, 0 sessions
       const newParent = {
         id: 'P-' + Date.now(),
         name: name,
@@ -886,8 +938,8 @@
 
       for (let day = 1; day <= daysInMonth; day++) {
         const dateStr = `${state.currentCalYear}-${pad(state.currentCalMonth + 1)}-${pad(day)}`;
-        const hasOpenSlots = state.publishedSlots.some(s => s.date === dateStr && s.status === 'open');
-        const isSelected = state.selectedCalDate === dateStr;
+        const hasOpenSlots = state.publishedSlots.some(s => normalizeDateString(s.date) === dateStr && s.status === 'open');
+        const isSelected = normalizeDateString(state.selectedCalDate) === dateStr;
         const isToday = dateStr === CURRENT_SYSTEM_DATE;
 
         const cell = document.createElement('button');
@@ -925,12 +977,13 @@
       const heading = document.getElementById('selected-day-slots-heading');
       container.innerHTML = '';
 
-      const [y, m, d] = state.selectedCalDate.split('-');
+      const targetDate = normalizeDateString(state.selectedCalDate);
+      const [y, m, d] = targetDate.split('-');
       const dateObj = new Date(Number(y), Number(m) - 1, Number(d));
       const formatted = dateObj.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' });
       heading.innerText = `Open Lesson Slots: ${formatted}`;
 
-      const openSlots = state.publishedSlots.filter(s => s.date === state.selectedCalDate && s.status === 'open');
+      const openSlots = state.publishedSlots.filter(s => normalizeDateString(s.date) === targetDate && s.status === 'open');
 
       if (openSlots.length === 0) {
         container.innerHTML = `
@@ -968,7 +1021,7 @@
       const slot = state.publishedSlots.find(s => s.id === slotId);
       if (!slot) return;
 
-      document.getElementById('modal-slot-datetime').innerText = `${slot.date} @ ${formatTimeDisplay(slot.time)}`;
+      document.getElementById('modal-slot-datetime').innerText = `${normalizeDateString(slot.date)} @ ${formatTimeDisplay(slot.time)}`;
 
       const sel = document.getElementById('modal-select-athlete');
       sel.innerHTML = '';
@@ -1031,8 +1084,8 @@
       const newLesson = {
         id: 'LES-' + Date.now(),
         slotId: slot.id,
-        date: slot.date,
-        time: slot.time,
+        date: normalizeDateString(slot.date),
+        time: normalizeTimeString(slot.time),
         duration: state.activeDuration,
         athleteName: athlete,
         parentEmail: state.currentParent.email,
@@ -1045,7 +1098,7 @@
 
       state.invoices.unshift({
         id: 'INV-' + Date.now().toString().slice(-4),
-        date: slot.date,
+        date: normalizeDateString(slot.date),
         athleteName: athlete,
         parentEmail: state.currentParent.email,
         amount: cost,
@@ -1060,7 +1113,7 @@
       renderCoachDashboardMetrics();
       renderCoachCalendarDays();
       renderCoachDaySummary();
-      alert(`Lesson confirmed for ${athlete} on ${slot.date} at ${formatTimeDisplay(slot.time)}!`);
+      alert(`Lesson confirmed for ${athlete} on ${normalizeDateString(slot.date)} at ${formatTimeDisplay(slot.time)}!`);
     }
 
     function renderScheduledLessons() {
@@ -1082,7 +1135,7 @@
         card.innerHTML = `
           <div>
             <div class="flex items-center space-x-2">
-              <span class="font-extrabold text-sm text-slate-900">${l.date} @ ${formatTimeDisplay(l.time)}</span>
+              <span class="font-extrabold text-sm text-slate-900">${normalizeDateString(l.date)} @ ${formatTimeDisplay(l.time)}</span>
               <span class="text-xs bg-blue-50 text-blue-700 font-bold px-2 py-0.5 rounded-full">${l.duration} mins</span>
               <span class="text-xs ${l.paymentStatus.includes('paid') ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'} font-bold px-2 py-0.5 rounded-full">
                 ${l.paymentStatus.includes('paid') ? '✓ Paid' : '⏳ Payment Due'}
@@ -1110,14 +1163,14 @@
       if (!lesson) return;
 
       const modalContent = document.getElementById('cancel-modal-content');
-      const lessonDateTime = new Date(`${lesson.date}T${lesson.time}:00`);
+      const lessonDateTime = new Date(`${normalizeDateString(lesson.date)}T${normalizeTimeString(lesson.time)}:00`);
       const now = new Date();
       const diffHours = (lessonDateTime - now) / (1000 * 60 * 60);
       const isEligibleForReload = diffHours >= 24;
 
       modalContent.innerHTML = `
         <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
-          <p class="font-extrabold text-slate-900">${lesson.athleteName} - ${lesson.date} @ ${formatTimeDisplay(lesson.time)}</p>
+          <p class="font-extrabold text-slate-900">${lesson.athleteName} - ${normalizeDateString(lesson.date)} @ ${formatTimeDisplay(lesson.time)}</p>
           <p class="text-slate-500 mt-0.5">${lesson.duration} Minute Session</p>
         </div>
         <div class="p-3 rounded-xl ${isEligibleForReload ? 'bg-emerald-50 border border-emerald-200 text-emerald-800' : 'bg-amber-50 border border-amber-200 text-amber-800'}">
@@ -1142,7 +1195,7 @@
       const lesson = state.lessons.find(l => l.id === lessonId);
       if (!lesson) return;
 
-      const lessonDateTime = new Date(`${lesson.date}T${lesson.time}:00`);
+      const lessonDateTime = new Date(`${normalizeDateString(lesson.date)}T${normalizeTimeString(lesson.time)}:00`);
       const now = new Date();
       const diffHours = (lessonDateTime - now) / (1000 * 60 * 60);
 
@@ -1157,8 +1210,8 @@
       } else {
         state.publishedSlots.push({
           id: 'SLOT-REPO-' + Date.now(),
-          date: lesson.date,
-          time: lesson.time,
+          date: normalizeDateString(lesson.date),
+          time: normalizeTimeString(lesson.time),
           status: 'open'
         });
       }
@@ -1175,7 +1228,7 @@
       alert('Lesson cancelled. The time slot has repopulated on the booking calendar.');
     }
 
-    // ATHLETE VIEW LOGIC (STRICT 0 SESSIONS COMPLETED FOR NEW ACCOUNTS)
+    // ATHLETE VIEW LOGIC
     function renderAthleteView() {
       if (!state.currentParent || !state.currentParent.athletes || state.currentParent.athletes.length === 0) {
         document.getElementById('athlete-display-name').innerText = 'No Athlete Selected';
@@ -1191,7 +1244,6 @@
       document.getElementById('athlete-display-level').innerText = (ath.level || 'Athlete') + ' • RJ Baseball Performance';
       document.getElementById('athlete-credits-count').innerText = Number(state.currentParent.credits || 0).toFixed(1);
 
-      // Only count lessons explicitly marked as completed (new accounts = 0)
       const completedSessions = state.lessons.filter(l => 
         l.parentEmail && 
         l.parentEmail.toLowerCase() === state.currentParent.email.toLowerCase() && 
@@ -1214,7 +1266,7 @@
         card.className = 'p-4 rounded-xl border border-slate-200 bg-slate-50 flex items-center justify-between';
         card.innerHTML = `
           <div>
-            <span class="font-extrabold text-sm text-slate-900">${l.date} @ ${formatTimeDisplay(l.time)}</span>
+            <span class="font-extrabold text-sm text-slate-900">${normalizeDateString(l.date)} @ ${formatTimeDisplay(l.time)}</span>
             <p class="text-xs text-slate-500">${l.duration} Min Private Training • Athlete: ${l.athleteName}</p>
           </div>
           <span class="text-xs bg-blue-100 text-blue-800 font-extrabold px-3 py-1 rounded-full">Confirmed</span>
@@ -1225,31 +1277,26 @@
 
     // --- COACH COMMAND CENTER & METRIC BUBBLES ---
     function renderCoachDashboardMetrics() {
-      // 1. Open Lesson Slots Bubble
       const openSlotsCount = state.publishedSlots.filter(s => s.status === 'open').length;
       const openSlotMetricEl = document.getElementById('metric-open-slots');
       if (openSlotMetricEl) openSlotMetricEl.innerText = openSlotsCount;
 
-      // 2. Unpaid / Due Invoices
       const unpaidInvoices = state.invoices.filter(i => i.status !== 'Paid');
       const unpaidTotal = unpaidInvoices.reduce((sum, i) => sum + Number(i.amount || 0), 0);
       document.getElementById('metric-unpaid-amount').innerText = `$${unpaidTotal}`;
       document.getElementById('metric-unpaid-count').innerText = `(${unpaidInvoices.length} due)`;
 
-      // 3. Monthly Revenue
       const currentYearMonth = `${todayObj.getFullYear()}-${pad(todayObj.getMonth() + 1)}`;
-      const paidThisMonth = state.invoices.filter(i => i.status === 'Paid' && i.date && i.date.startsWith(currentYearMonth));
+      const paidThisMonth = state.invoices.filter(i => i.status === 'Paid' && i.date && normalizeDateString(i.date).startsWith(currentYearMonth));
       const monthlyTotal = paidThisMonth.reduce((sum, i) => sum + Number(i.amount || 0), 0);
       document.getElementById('metric-monthly-revenue').innerText = `$${monthlyTotal}`;
 
-      // 4. Active Students
       let studentCount = 0;
       state.parents.forEach(p => {
         studentCount += (p.athletes ? p.athletes.length : 0);
       });
       document.getElementById('metric-active-students').innerText = studentCount;
 
-      // 5. Scheduled Lessons
       document.getElementById('metric-scheduled-lessons').innerText = state.lessons.length;
     }
 
@@ -1282,16 +1329,8 @@
 
     // COACH MASTER CALENDAR
     function navigateCoachCalendarMonth(delta) {
-      state.currentCalMonth += delta;
-      if (state.currentCalMonth < 0) {
-        state.currentCalMonth = 11;
-        state.currentCalYear--;
-      } else if (state.currentCalMonth > 11) {
-        state.currentCalMonth = 0;
-        state.currentCalYear++;
-      }
+      navigateCalendarMonth(delta);
       renderCoachCalendarDays();
-      renderCoachDaySummary();
     }
 
     function renderCoachCalendarDays() {
@@ -1312,9 +1351,9 @@
 
       for (let day = 1; day <= daysInMonth; day++) {
         const dateStr = `${state.currentCalYear}-${pad(state.currentCalMonth + 1)}-${pad(day)}`;
-        const daySlots = state.publishedSlots.filter(s => s.date === dateStr && s.status === 'open');
-        const dayLessons = state.lessons.filter(l => l.date === dateStr);
-        const isSelected = state.selectedCalDate === dateStr;
+        const daySlots = state.publishedSlots.filter(s => normalizeDateString(s.date) === dateStr && s.status === 'open');
+        const dayLessons = state.lessons.filter(l => normalizeDateString(l.date) === dateStr);
+        const isSelected = normalizeDateString(state.selectedCalDate) === dateStr;
         const isToday = dateStr === CURRENT_SYSTEM_DATE;
 
         const cell = document.createElement('button');
@@ -1352,14 +1391,15 @@
 
     function renderCoachDaySummary() {
       const heading = document.getElementById('coach-selected-day-heading');
-      const [y, m, d] = state.selectedCalDate.split('-');
+      const targetDate = normalizeDateString(state.selectedCalDate);
+      const [y, m, d] = targetDate.split('-');
       const dateObj = new Date(Number(y), Number(m) - 1, Number(d));
       const formatted = dateObj.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' });
       heading.innerText = `Coach Master Schedule: ${formatted}`;
 
       const bookedFeed = document.getElementById('coach-day-booked-lessons');
       bookedFeed.innerHTML = '';
-      const dayLessons = state.lessons.filter(l => l.date === state.selectedCalDate);
+      const dayLessons = state.lessons.filter(l => normalizeDateString(l.date) === targetDate);
 
       if (dayLessons.length === 0) {
         bookedFeed.innerHTML = `<p class="text-xs text-slate-400 py-3 text-center">No lessons booked on this date.</p>`;
@@ -1385,7 +1425,7 @@
 
       const slotsFeed = document.getElementById('coach-day-open-slots');
       slotsFeed.innerHTML = '';
-      const daySlots = state.publishedSlots.filter(s => s.date === state.selectedCalDate && s.status === 'open');
+      const daySlots = state.publishedSlots.filter(s => normalizeDateString(s.date) === targetDate && s.status === 'open');
 
       if (daySlots.length === 0) {
         slotsFeed.innerHTML = `<p class="text-xs text-slate-400 py-3 text-center">No open slots on this date.</p>`;
@@ -1419,17 +1459,18 @@
     async function handleCoachPublishSlot(e) {
       e.preventDefault();
       const date = document.getElementById('slot-pub-date').value;
-      const time = document.getElementById('slot-pub-time').value;
+      const rawTime = document.getElementById('slot-pub-time').value;
+      const normalizedTime = normalizeTimeString(rawTime);
 
       state.publishedSlots.push({
         id: 'SLOT-' + Date.now(),
-        date: date,
-        time: time,
+        date: normalizeDateString(date),
+        time: normalizedTime,
         status: 'open'
       });
 
-      state.selectedCalDate = date;
-      const [sy, sm] = date.split('-');
+      state.selectedCalDate = normalizeDateString(date);
+      const [sy, sm] = state.selectedCalDate.split('-');
       state.currentCalYear = Number(sy);
       state.currentCalMonth = Number(sm) - 1;
 
@@ -1443,14 +1484,15 @@
       renderCalendarDays();
       renderOpenSlots();
 
-      alert(`Open slot for ${date} at ${formatTimeDisplay(time)} is now live across the parent portal and master calendar!`);
+      alert(`Open slot for ${state.selectedCalDate} at ${formatTimeDisplay(normalizedTime)} is now live across the parent portal and master calendar!`);
     }
 
     async function quickAddSlot(timeStr) {
+      const normalizedTime = normalizeTimeString(timeStr);
       state.publishedSlots.push({
         id: 'SLOT-' + Date.now(),
         date: CURRENT_SYSTEM_DATE,
-        time: timeStr,
+        time: normalizedTime,
         status: 'open'
       });
 
@@ -1476,7 +1518,7 @@
         item.className = 'p-3 rounded-xl border border-slate-200 flex items-center justify-between text-xs';
         item.innerHTML = `
           <div>
-            <span class="font-extrabold text-slate-900">${slot.date} @ ${formatTimeDisplay(slot.time)}</span>
+            <span class="font-extrabold text-slate-900">${normalizeDateString(slot.date)} @ ${formatTimeDisplay(slot.time)}</span>
             <span class="ml-2 font-bold px-2 py-0.5 rounded-full ${slot.status === 'open' ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-500'}">
               ${slot.status.toUpperCase()}
             </span>
@@ -1526,8 +1568,8 @@
         return;
       }
       const [athleteName, parentEmail] = studentVal.split('|');
-      const date = document.getElementById('direct-book-date').value;
-      const time = document.getElementById('direct-book-time').value;
+      const date = normalizeDateString(document.getElementById('direct-book-date').value);
+      const time = normalizeTimeString(document.getElementById('direct-book-time').value);
       const duration = Number(document.getElementById('direct-book-duration').value);
       const payment = document.getElementById('direct-book-payment').value;
       const price = duration === 120 ? 200 : (duration === 90 ? 150 : 100);
@@ -1587,7 +1629,7 @@
         row.innerHTML = `
           <div>
             <span class="font-extrabold text-slate-900">${inv.id} • ${inv.athleteName}</span>
-            <span class="text-slate-500 ml-2">${inv.date} (${inv.method})</span>
+            <span class="text-slate-500 ml-2">${normalizeDateString(inv.date)} (${inv.method})</span>
           </div>
           <div class="flex items-center space-x-3">
             <span class="font-black text-slate-900">$${inv.amount}</span>
@@ -1648,8 +1690,8 @@
     }
 
     function generateGoogleCalendarUrl(lesson) {
-      const dateParts = lesson.date.replace(/-/g, '');
-      const [h, m] = lesson.time.split(':');
+      const dateParts = normalizeDateString(lesson.date).replace(/-/g, '');
+      const [h, m] = normalizeTimeString(lesson.time).split(':');
       const startIso = `${dateParts}T${h}${m}00Z`;
       
       const endH = String(Number(h) + Math.floor(lesson.duration / 60)).padStart(2, '0');
@@ -1663,10 +1705,14 @@
       return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${startIso}/${endIso}&details=${details}&location=${location}`;
     }
 
+    // STRICT TIME FORMATTER
     function formatTimeDisplay(timeStr) {
       if (!timeStr) return '';
-      const [hours, minutes] = timeStr.split(':');
-      let h = parseInt(hours, 10);
+      const clean = normalizeTimeString(timeStr);
+      const parts = clean.split(':');
+      if (parts.length < 2) return clean;
+      let h = parseInt(parts[0], 10);
+      const minutes = parts[1];
       const ampm = h >= 12 ? 'PM' : 'AM';
       h = h % 12 || 12;
       return `${h}:${minutes} ${ampm}`;
