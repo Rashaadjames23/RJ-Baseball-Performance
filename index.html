@@ -186,25 +186,44 @@
               <h3 id="calendar-header-title" class="text-lg font-black tracking-tight text-slate-900">Current Schedule</h3>
               <span class="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">Live Calendar</span>
             </div>
-            <div class="flex items-center space-x-2">
-              <button onclick="navigateCalendarMonth(-1)" class="p-2 rounded-lg border border-slate-200 text-xs font-bold hover:bg-slate-100">‹ Prev</button>
-              <button onclick="jumpToCurrentToday()" class="px-3 py-2 rounded-lg bg-slate-100 text-xs font-bold hover:bg-slate-200">Today</button>
-              <button onclick="navigateCalendarMonth(1)" class="p-2 rounded-lg border border-slate-200 text-xs font-bold hover:bg-slate-100">Next ›</button>
+            
+            <div class="flex items-center space-x-3">
+              <!-- WEEKLY / MONTHLY TOGGLE -->
+              <div class="flex bg-slate-100 p-1 rounded-xl text-xs font-bold">
+                <button id="toggle-view-monthly" onclick="setCalendarLayout('monthly')" class="px-3 py-1 rounded-lg bg-white text-slate-900 shadow-sm">Month</button>
+                <button id="toggle-view-weekly" onclick="setCalendarLayout('weekly')" class="px-3 py-1 rounded-lg text-slate-600 hover:text-slate-900">Week</button>
+              </div>
+
+              <div class="flex items-center space-x-1">
+                <button onclick="navigateCalendarNav(-1)" class="p-2 rounded-lg border border-slate-200 text-xs font-bold hover:bg-slate-100">‹ Prev</button>
+                <button onclick="jumpToCurrentToday()" class="px-3 py-2 rounded-lg bg-slate-100 text-xs font-bold hover:bg-slate-200">Today</button>
+                <button onclick="navigateCalendarNav(1)" class="p-2 rounded-lg border border-slate-200 text-xs font-bold hover:bg-slate-100">Next ›</button>
+              </div>
             </div>
           </div>
 
-          <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm">
+          <!-- Monthly Grid View -->
+          <div id="parent-calendar-monthly-view" class="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm">
             <div class="grid grid-cols-7 gap-2 text-center text-xs font-extrabold text-slate-400 uppercase tracking-wider mb-2">
               <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
             </div>
             <div id="calendar-days-grid" class="grid grid-cols-7 gap-2"></div>
           </div>
 
+          <!-- Weekly Strip View -->
+          <div id="parent-calendar-weekly-view" class="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm hidden">
+            <div class="grid grid-cols-7 gap-2 text-center text-xs font-extrabold text-slate-400 uppercase tracking-wider mb-2">
+              <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+            </div>
+            <div id="calendar-weekly-strip" class="grid grid-cols-7 gap-2"></div>
+          </div>
+
+          <!-- Open Slots Stream -->
           <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4">
             <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
               <div>
                 <h4 id="selected-day-slots-heading" class="text-base font-black text-slate-900">Open Lesson Slots</h4>
-                <p class="text-xs text-slate-500">Pick an open lesson time below. Cancelled slots repopulate automatically in real time.</p>
+                <p class="text-xs text-slate-500">Pick an open lesson time below. Weekly standing times reserve 4 weeks automatically.</p>
               </div>
               <span class="text-xs font-bold text-slate-600">Rate: $100/hr • $150/90m • $200/2hr</span>
             </div>
@@ -342,11 +361,14 @@
       <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm flex flex-wrap items-center justify-between gap-4">
         <div>
           <h2 class="text-xl font-black text-slate-900">Coach RJ Command Center</h2>
-          <p class="text-xs text-slate-500">Manage lesson slots, schedule direct lessons, and confirm Venmo/Zelle payments.</p>
+          <p class="text-xs text-slate-500">Manage lesson slots, athlete rosters, and payments.</p>
         </div>
         <div class="flex items-center space-x-1 bg-slate-100 p-1 rounded-xl text-xs font-bold">
           <button id="coach-tab-calendar" onclick="switchCoachSubTab('calendar')" class="px-3 py-1.5 rounded-lg bg-white text-slate-900 shadow-sm">
             Master Calendar
+          </button>
+          <button id="coach-tab-roster" onclick="switchCoachSubTab('roster')" class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900">
+            Athletes & Directory
           </button>
           <button id="coach-tab-slots" onclick="switchCoachSubTab('slots')" class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900">
             Publish Slots
@@ -394,6 +416,22 @@
               <div id="coach-day-open-slots" class="space-y-2"></div>
             </div>
           </div>
+        </div>
+      </div>
+
+      <!-- COACH TAB: ATHLETES & PARENT DIRECTORY -->
+      <div id="coach-content-roster" class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-6 hidden">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+          <div>
+            <h4 class="text-base font-black text-slate-900">Athletes & Family Directory</h4>
+            <p class="text-xs text-slate-500">Complete list of registered players, contact numbers, emails, and balances.</p>
+          </div>
+          <span id="roster-athlete-badge" class="px-3 py-1 bg-blue-50 text-blue-700 font-extrabold rounded-full text-xs">
+            0 Total Athletes
+          </span>
+        </div>
+        <div id="coach-roster-directory-table" class="overflow-x-auto">
+          <!-- Populated dynamically -->
         </div>
       </div>
 
@@ -499,12 +537,33 @@
 
   </main>
 
-  <!-- MODAL: BOOK LESSON CONFIRMATION -->
-  <div id="modal-book-slot" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-start justify-center pt-16 sm:pt-24 px-4 hidden">
-    <div class="bg-white rounded-2xl border border-slate-200 max-w-md w-full p-6 shadow-2xl space-y-5">
+  <!-- MODAL: BOOK LESSON CONFIRMATION & STANDING TIME OPTION -->
+  <div id="modal-book-slot" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-start justify-center pt-16 sm:pt-20 px-4 hidden">
+    <div class="bg-white rounded-2xl border border-slate-200 max-w-md w-full p-6 shadow-2xl space-y-4">
       <div class="flex items-center justify-between border-b border-slate-100 pb-3">
         <h4 class="font-black text-slate-900 text-base">Confirm Lesson Booking</h4>
         <button onclick="closeBookModal()" class="text-slate-400 hover:text-slate-700 font-bold text-lg">✕</button>
+      </div>
+
+      <!-- INSUFFICIENT CREDITS PROMPT BUBBLE -->
+      <div id="modal-insufficient-credit-bubble" class="p-3.5 bg-amber-50 border border-amber-300 rounded-2xl space-y-2 hidden">
+        <div class="flex items-center space-x-2 text-amber-900 font-black text-xs">
+          <span>⚠️ Insufficient Lesson Credits</span>
+        </div>
+        <p class="text-[11px] text-amber-800 leading-snug">
+          You don't have enough credits for this session. Pick a package below to reload credits immediately:
+        </p>
+        <div class="grid grid-cols-3 gap-1.5 pt-1">
+          <button onclick="promptPackagePurchase(1, 100)" class="py-1.5 bg-white border border-amber-300 rounded-lg text-[10px] font-extrabold text-slate-900 hover:bg-amber-100">
+            1 Credit ($100)
+          </button>
+          <button onclick="promptPackagePurchase(4, 380)" class="py-1.5 bg-blue-600 text-white rounded-lg text-[10px] font-extrabold hover:bg-blue-700 shadow-sm">
+            4 Pack ($380)
+          </button>
+          <button onclick="promptPackagePurchase(8, 720)" class="py-1.5 bg-slate-900 text-white rounded-lg text-[10px] font-extrabold hover:bg-black">
+            8 Pack ($720)
+          </button>
+        </div>
       </div>
 
       <div class="space-y-3 text-xs">
@@ -527,9 +586,20 @@
           </div>
         </div>
 
+        <!-- WEEKLY STANDING TIME OPTION -->
+        <div class="p-3 bg-blue-50/70 border border-blue-200 rounded-xl space-y-1.5">
+          <label class="flex items-center space-x-2 cursor-pointer">
+            <input type="checkbox" id="modal-standing-toggle" onchange="toggleStandingMode(this.checked)" class="w-4 h-4 rounded text-blue-600 focus:ring-blue-500">
+            <span class="font-extrabold text-slate-900 text-xs">Reserve Weekly Standing Time (4 Weeks)</span>
+          </label>
+          <p class="text-[11px] text-slate-600">
+            Locks in this exact day & time every week for 4 consecutive weeks. Paid strictly using lesson credits (<span id="modal-standing-credit-total">4.0</span> credits total).
+          </p>
+        </div>
+
         <div>
           <label class="block font-bold text-slate-700 mb-1">Payment Method</label>
-          <select id="modal-select-payment" class="w-full px-3 py-2 border rounded-xl font-semibold">
+          <select id="modal-select-payment" onchange="checkCreditAvailability()" class="w-full px-3 py-2 border rounded-xl font-semibold">
             <option value="credit">Use Active Credit</option>
             <option value="venmo">Venmo (@Richard-James-256)</option>
             <option value="zelle">Zelle (346-660-1074 - Richard James)</option>
@@ -569,10 +639,9 @@
     const CURRENT_SYSTEM_DATE = `${todayObj.getFullYear()}-${pad(todayObj.getMonth() + 1)}-${pad(todayObj.getDate())}`;
     const COACH_SECURITY_PIN = "Ballislife123!";
 
-    // PASTE YOUR DEPLOYED GOOGLE APPS SCRIPT WEB APP URL HERE:
+    // GOOGLE APPS SCRIPT WEB APP URL
     const GOOGLE_SHEET_API_URL = "https://script.google.com/macros/s/AKfycbxiadyhn8h2FHxoH9chKsoHXAYUgyJu4H67UGEH8Z39bCh4MWjFaHouJRgFIrxxMQqklg/exec";
 
-    // Date & Time Normalizers (Prevents Google Sheets timestamp corruption)
     function normalizeDateString(dateVal) {
       if (!dateVal) return '';
       if (typeof dateVal === 'string') {
@@ -591,12 +660,10 @@
     function normalizeTimeString(timeVal) {
       if (!timeVal) return '12:00';
       const str = String(timeVal).trim();
-      // If it's already HH:MM
       const hmMatch = str.match(/(\d{1,2}):(\d{2})/);
       if (hmMatch && !str.includes('T') && !str.includes('GMT')) {
         return `${pad(hmMatch[1])}:${hmMatch[2]}`;
       }
-      // If full date-time string from sheet
       try {
         const d = new Date(timeVal);
         if (!isNaN(d.getTime())) {
@@ -609,12 +676,15 @@
     let state = {
       userRole: 'parent',
       currentParent: null,
+      calendarLayout: 'monthly', // 'monthly' or 'weekly'
       selectedCalDate: CURRENT_SYSTEM_DATE,
       currentCalYear: todayObj.getFullYear(),
       currentCalMonth: todayObj.getMonth(),
+      currentWeekStart: new Date(todayObj.setDate(todayObj.getDate() - todayObj.getDay())), // Sunday
       activeDuration: 60,
       activeSlotIdForBooking: null,
       activeLessonIdToCancel: null,
+      isStandingReservation: false,
       parents: [],
       publishedSlots: [
         { id: 'SLOT-1', date: CURRENT_SYSTEM_DATE, time: '15:30', status: 'open' },
@@ -664,12 +734,14 @@
           saveState();
 
           renderCalendarDays();
+          renderCalendarWeeklyStrip();
           renderOpenSlots();
           renderScheduledLessons();
           renderAthleteView();
           renderCoachDashboardMetrics();
           renderCoachCalendarDays();
           renderCoachDaySummary();
+          renderCoachRoster();
 
           if (!document.getElementById('view-instructor').classList.contains('hidden')) {
             renderCoachPublishedSlots();
@@ -824,6 +896,7 @@
     function handleParentRegister(e) {
       e.preventDefault();
       const name = document.getElementById('reg-parent-name').value.trim();
+      const phone = document.getElementById('reg-parent-phone').value.trim();
       const email = document.getElementById('reg-parent-email').value.trim().toLowerCase();
       const pin = document.getElementById('reg-parent-pin').value.trim();
       const a1 = document.getElementById('reg-athlete-1').value.trim();
@@ -841,6 +914,7 @@
       const newParent = {
         id: 'P-' + Date.now(),
         name: name,
+        phone: phone,
         email: email,
         pin: pin,
         credits: 0.0,
@@ -854,6 +928,7 @@
       syncToCloud();
       renderParentPortalSession();
       renderCoachDashboardMetrics();
+      renderCoachRoster();
     }
 
     function handleParentLogout() {
@@ -863,6 +938,7 @@
       document.getElementById('parent-authenticated-content').classList.add('hidden');
     }
 
+    // STRICT DATE ONLY ON "VALID THRU"
     function renderParentPortalSession() {
       if (!state.currentParent) {
         document.getElementById('parent-auth-card').classList.remove('hidden');
@@ -876,9 +952,13 @@
       document.getElementById('active-parent-name').innerText = state.currentParent.name;
       const athleteSummary = (state.currentParent.athletes || []).map(a => `${a.name} (${a.level})`).join(', ');
       document.getElementById('active-parent-athletes').innerText = 'Athletes: ' + (athleteSummary || 'None registered');
-      document.getElementById('parent-credit-badge').innerText = `${Number(state.currentParent.credits || 0).toFixed(1)} Credits (Valid thru ${state.currentParent.creditExpires || '30 days'})`;
+      
+      // Clean date only (no time)
+      const cleanExpires = normalizeDateString(state.currentParent.creditExpires) || '30 days';
+      document.getElementById('parent-credit-badge').innerText = `${Number(state.currentParent.credits || 0).toFixed(1)} Credits (Valid thru ${cleanExpires})`;
 
       renderCalendarDays();
+      renderCalendarWeeklyStrip();
       renderOpenSlots();
       renderScheduledLessons();
     }
@@ -895,31 +975,67 @@
       if (tab === 'history') renderScheduledLessons();
     }
 
-    // CALENDAR LOGIC (Parent)
+    // CALENDAR LAYOUT TOGGLE (WEEKLY / MONTHLY)
+    function setCalendarLayout(layout) {
+      state.calendarLayout = layout;
+      const btnM = document.getElementById('toggle-view-monthly');
+      const btnW = document.getElementById('toggle-view-weekly');
+      const viewM = document.getElementById('parent-calendar-monthly-view');
+      const viewW = document.getElementById('parent-calendar-weekly-view');
+
+      if (layout === 'monthly') {
+        btnM.className = 'px-3 py-1 rounded-lg bg-white text-slate-900 shadow-sm';
+        btnW.className = 'px-3 py-1 rounded-lg text-slate-600 hover:text-slate-900';
+        viewM.classList.remove('hidden');
+        viewW.classList.add('hidden');
+        renderCalendarDays();
+      } else {
+        btnW.className = 'px-3 py-1 rounded-lg bg-white text-slate-900 shadow-sm';
+        btnM.className = 'px-3 py-1 rounded-lg text-slate-600 hover:text-slate-900';
+        viewW.classList.remove('hidden');
+        viewM.classList.add('hidden');
+        renderCalendarWeeklyStrip();
+      }
+    }
+
+    function navigateCalendarNav(delta) {
+      if (state.calendarLayout === 'monthly') {
+        state.currentCalMonth += delta;
+        if (state.currentCalMonth < 0) {
+          state.currentCalMonth = 11;
+          state.currentCalYear--;
+        } else if (state.currentCalMonth > 11) {
+          state.currentCalMonth = 0;
+          state.currentCalYear++;
+        }
+        renderCalendarDays();
+      } else {
+        // Shift week by 7 days
+        const cur = new Date(state.currentWeekStart);
+        cur.setDate(cur.getDate() + (delta * 7));
+        state.currentWeekStart = cur;
+        renderCalendarWeeklyStrip();
+      }
+      renderOpenSlots();
+    }
+
     function jumpToCurrentToday() {
       state.selectedCalDate = CURRENT_SYSTEM_DATE;
       const d = new Date();
       state.currentCalYear = d.getFullYear();
       state.currentCalMonth = d.getMonth();
+      const sun = new Date(d);
+      sun.setDate(d.getDate() - d.getDay());
+      state.currentWeekStart = sun;
+      
       renderCalendarDays();
+      renderCalendarWeeklyStrip();
       renderOpenSlots();
       renderCoachCalendarDays();
       renderCoachDaySummary();
     }
 
-    function navigateCalendarMonth(delta) {
-      state.currentCalMonth += delta;
-      if (state.currentCalMonth < 0) {
-        state.currentCalMonth = 11;
-        state.currentCalYear--;
-      } else if (state.currentCalMonth > 11) {
-        state.currentCalMonth = 0;
-        state.currentCalYear++;
-      }
-      renderCalendarDays();
-      renderOpenSlots();
-    }
-
+    // MONTHLY GRID RENDER
     function renderCalendarDays() {
       const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
       document.getElementById('calendar-header-title').innerText = `${monthNames[state.currentCalMonth]} ${state.currentCalYear}`;
@@ -946,6 +1062,7 @@
         cell.onclick = () => {
           state.selectedCalDate = dateStr;
           renderCalendarDays();
+          renderCalendarWeeklyStrip();
           renderOpenSlots();
         };
 
@@ -969,6 +1086,54 @@
           </div>
         `;
         grid.appendChild(cell);
+      }
+    }
+
+    // WEEKLY STRIP RENDER
+    function renderCalendarWeeklyStrip() {
+      const strip = document.getElementById('calendar-weekly-strip');
+      strip.innerHTML = '';
+
+      const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+      const start = new Date(state.currentWeekStart);
+
+      for (let i = 0; i < 7; i++) {
+        const curDate = new Date(start);
+        curDate.setDate(start.getDate() + i);
+        const dateStr = `${curDate.getFullYear()}-${pad(curDate.getMonth() + 1)}-${pad(curDate.getDate())}`;
+
+        const hasOpenSlots = state.publishedSlots.some(s => normalizeDateString(s.date) === dateStr && s.status === 'open');
+        const isSelected = normalizeDateString(state.selectedCalDate) === dateStr;
+        const isToday = dateStr === CURRENT_SYSTEM_DATE;
+
+        const cell = document.createElement('button');
+        cell.onclick = () => {
+          state.selectedCalDate = dateStr;
+          renderCalendarDays();
+          renderCalendarWeeklyStrip();
+          renderOpenSlots();
+        };
+
+        let cellStyle = 'h-20 rounded-xl border p-2 text-left flex flex-col justify-between transition ';
+        if (isSelected) {
+          cellStyle += 'border-blue-600 bg-blue-50/70 ring-2 ring-blue-600/30 font-bold';
+        } else if (isToday) {
+          cellStyle += 'border-slate-400 bg-slate-100 font-bold';
+        } else {
+          cellStyle += 'border-slate-200 bg-white hover:border-blue-400';
+        }
+
+        cell.className = cellStyle;
+        cell.innerHTML = `
+          <div>
+            <span class="text-[10px] uppercase font-bold text-slate-400 block">${dayNames[i]}</span>
+            <span class="text-sm font-black ${isSelected ? 'text-blue-700' : 'text-slate-800'}">${curDate.getDate()}</span>
+          </div>
+          <div class="text-[10px]">
+            ${hasOpenSlots ? '<span class="px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 font-black text-[9px]">Open</span>' : '<span class="text-slate-300 text-[10px]">—</span>'}
+          </div>
+        `;
+        strip.appendChild(cell);
       }
     }
 
@@ -1001,7 +1166,7 @@
         card.innerHTML = `
           <div>
             <div class="text-base font-black text-slate-900">${formatTimeDisplay(slot.time)}</div>
-            <div class="text-xs text-slate-500">1-on-1 Lesson • Coach RJ</div>
+            <div class="text-xs text-slate-500">1-on-1 Private Lesson • Coach RJ</div>
           </div>
           <button onclick="openBookModal('${slot.id}')" class="px-3.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow">
             Book Slot
@@ -1011,17 +1176,19 @@
       });
     }
 
-    // BOOKING MODAL
+    // BOOKING MODAL LOGIC & INSUFFICIENT CREDIT BUBBLE
     function openBookModal(slotId) {
       if (!state.currentParent) {
         alert("Please sign in or register to book a lesson slot.");
         return;
       }
       state.activeSlotIdForBooking = slotId;
+      state.isStandingReservation = false;
       const slot = state.publishedSlots.find(s => s.id === slotId);
       if (!slot) return;
 
       document.getElementById('modal-slot-datetime').innerText = `${normalizeDateString(slot.date)} @ ${formatTimeDisplay(slot.time)}`;
+      document.getElementById('modal-standing-toggle').checked = false;
 
       const sel = document.getElementById('modal-select-athlete');
       sel.innerHTML = '';
@@ -1042,6 +1209,7 @@
       }
 
       setModalDuration(60);
+      checkCreditAvailability();
       document.getElementById('modal-book-slot').classList.remove('hidden');
     }
 
@@ -1055,6 +1223,41 @@
           btn.className = 'py-2 text-center border border-slate-200 font-bold rounded-xl text-slate-700';
         }
       });
+      const credsPerLesson = mins / 60;
+      document.getElementById('modal-standing-credit-total').innerText = (credsPerLesson * 4).toFixed(1);
+      checkCreditAvailability();
+    }
+
+    function toggleStandingMode(checked) {
+      state.isStandingReservation = checked;
+      const paymentSel = document.getElementById('modal-select-payment');
+      if (checked) {
+        // Standing reservation must be paid with credits
+        paymentSel.value = 'credit';
+        paymentSel.disabled = true;
+      } else {
+        paymentSel.disabled = false;
+      }
+      checkCreditAvailability();
+    }
+
+    function checkCreditAvailability() {
+      const paymentMethod = document.getElementById('modal-select-payment').value;
+      const bubble = document.getElementById('modal-insufficient-credit-bubble');
+      
+      if (paymentMethod === 'credit' && state.currentParent) {
+        const multiplier = state.isStandingReservation ? 4 : 1;
+        const requiredCredits = (state.activeDuration / 60) * multiplier;
+        const availableCredits = Number(state.currentParent.credits || 0);
+
+        if (availableCredits < requiredCredits) {
+          bubble.classList.remove('hidden');
+        } else {
+          bubble.classList.add('hidden');
+        }
+      } else {
+        bubble.classList.add('hidden');
+      }
     }
 
     function closeBookModal() {
@@ -1068,41 +1271,63 @@
 
       const athlete = document.getElementById('modal-select-athlete').value;
       const paymentMethod = document.getElementById('modal-select-payment').value;
-      const cost = state.activeDuration === 120 ? 200 : (state.activeDuration === 90 ? 150 : 100);
-      const creditsNeeded = state.activeDuration / 60;
+      const multiplier = state.isStandingReservation ? 4 : 1;
+      const creditsNeeded = (state.activeDuration / 60) * multiplier;
+      const totalCost = (state.activeDuration === 120 ? 200 : (state.activeDuration === 90 ? 150 : 100)) * multiplier;
 
       if (paymentMethod === 'credit') {
         if (Number(state.currentParent.credits || 0) < creditsNeeded) {
-          alert(`Insufficient credits (${Number(state.currentParent.credits || 0).toFixed(1)} available, ${creditsNeeded.toFixed(1)} needed). Please select Venmo, Zelle, Cash, or purchase a package.`);
+          document.getElementById('modal-insufficient-credit-bubble').classList.remove('hidden');
+          alert(`You need ${creditsNeeded.toFixed(1)} credits, but currently have ${Number(state.currentParent.credits || 0).toFixed(1)}. Please choose a package below to reload.`);
           return;
         }
         state.currentParent.credits = Number(state.currentParent.credits) - creditsNeeded;
       }
 
+      // Mark primary slot booked
       slot.status = 'booked';
 
-      const newLesson = {
-        id: 'LES-' + Date.now(),
-        slotId: slot.id,
-        date: normalizeDateString(slot.date),
-        time: normalizeTimeString(slot.time),
-        duration: state.activeDuration,
-        athleteName: athlete,
-        parentEmail: state.currentParent.email,
-        paymentStatus: paymentMethod === 'credit' ? 'paid_credit' : 'unpaid_due',
-        paymentMethod: paymentMethod,
-        price: cost,
-        completed: false
-      };
-      state.lessons.push(newLesson);
+      const baseDate = new Date(normalizeDateString(slot.date) + 'T00:00:00');
+
+      for (let w = 0; w < multiplier; w++) {
+        const lessonDateObj = new Date(baseDate);
+        lessonDateObj.setDate(baseDate.getDate() + (w * 7));
+        const lessonDateStr = `${lessonDateObj.getFullYear()}-${pad(lessonDateObj.getMonth() + 1)}-${pad(lessonDateObj.getDate())}`;
+
+        // Ensure a slot exists for recurrence
+        let matchedSlotId = slot.id;
+        if (w > 0) {
+          matchedSlotId = 'SLOT-AUTO-' + Date.now() + '-' + w;
+          state.publishedSlots.push({
+            id: matchedSlotId,
+            date: lessonDateStr,
+            time: slot.time,
+            status: 'booked'
+          });
+        }
+
+        state.lessons.push({
+          id: 'LES-' + Date.now() + '-' + w,
+          slotId: matchedSlotId,
+          date: lessonDateStr,
+          time: normalizeTimeString(slot.time),
+          duration: state.activeDuration,
+          athleteName: athlete,
+          parentEmail: state.currentParent.email,
+          paymentStatus: paymentMethod === 'credit' ? 'paid_credit' : 'unpaid_due',
+          paymentMethod: paymentMethod,
+          price: totalCost / multiplier,
+          completed: false
+        });
+      }
 
       state.invoices.unshift({
         id: 'INV-' + Date.now().toString().slice(-4),
         date: normalizeDateString(slot.date),
         athleteName: athlete,
         parentEmail: state.currentParent.email,
-        amount: cost,
-        method: paymentMethod.toUpperCase(),
+        amount: totalCost,
+        method: state.isStandingReservation ? 'CREDIT (STANDING 4-WK)' : paymentMethod.toUpperCase(),
         status: paymentMethod === 'credit' ? 'Paid' : 'Unpaid'
       });
 
@@ -1113,7 +1338,7 @@
       renderCoachDashboardMetrics();
       renderCoachCalendarDays();
       renderCoachDaySummary();
-      alert(`Lesson confirmed for ${athlete} on ${normalizeDateString(slot.date)} at ${formatTimeDisplay(slot.time)}!`);
+      alert(`Lesson locked for ${athlete}! ${state.isStandingReservation ? 'Weekly standing reservation confirmed for 4 consecutive weeks.' : ''}`);
     }
 
     function renderScheduledLessons() {
@@ -1156,7 +1381,7 @@
       });
     }
 
-    // CANCELLATION & REPOPULATION
+    // CANCELLATION
     function promptCancelLesson(lessonId) {
       state.activeLessonIdToCancel = lessonId;
       const lesson = state.lessons.find(l => l.id === lessonId);
@@ -1275,7 +1500,7 @@
       });
     }
 
-    // --- COACH COMMAND CENTER & METRIC BUBBLES ---
+    // --- COACH COMMAND CENTER & DIRECTORY ---
     function renderCoachDashboardMetrics() {
       const openSlotsCount = state.publishedSlots.filter(s => s.status === 'open').length;
       const openSlotMetricEl = document.getElementById('metric-open-slots');
@@ -1296,12 +1521,69 @@
         studentCount += (p.athletes ? p.athletes.length : 0);
       });
       document.getElementById('metric-active-students').innerText = studentCount;
-
       document.getElementById('metric-scheduled-lessons').innerText = state.lessons.length;
     }
 
+    // ATHLETE & PARENT DIRECTORY TABLE
+    function renderCoachRoster() {
+      const container = document.getElementById('coach-roster-directory-table');
+      if (!container) return;
+
+      let allAthletes = [];
+      state.parents.forEach(p => {
+        (p.athletes || []).forEach(a => {
+          allAthletes.push({
+            athleteName: a.name,
+            level: a.level || 'General',
+            parentName: p.name,
+            phone: p.phone || 'N/A',
+            email: p.email,
+            credits: Number(p.credits || 0).toFixed(1)
+          });
+        });
+      });
+
+      document.getElementById('roster-athlete-badge').innerText = `${allAthletes.length} Total Athletes`;
+
+      if (allAthletes.length === 0) {
+        container.innerHTML = `<p class="text-xs text-slate-400 py-6 text-center">No athletes registered yet.</p>`;
+        return;
+      }
+
+      let html = `
+        <table class="w-full text-left text-xs text-slate-700">
+          <thead class="bg-slate-50 text-slate-500 uppercase font-black tracking-wider border-b border-slate-200">
+            <tr>
+              <th class="py-3 px-4">Athlete Name</th>
+              <th class="py-3 px-4">Age / Level</th>
+              <th class="py-3 px-4">Parent / Guardian</th>
+              <th class="py-3 px-4">Phone Number</th>
+              <th class="py-3 px-4">Email</th>
+              <th class="py-3 px-4 text-right">Available Credits</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100">
+      `;
+
+      allAthletes.forEach(row => {
+        html += `
+          <tr class="hover:bg-slate-50">
+            <td class="py-3 px-4 font-black text-slate-900">${row.athleteName}</td>
+            <td class="py-3 px-4">${row.level}</td>
+            <td class="py-3 px-4 font-semibold text-slate-800">${row.parentName}</td>
+            <td class="py-3 px-4 font-medium text-slate-600">${row.phone}</td>
+            <td class="py-3 px-4 font-medium text-slate-600">${row.email}</td>
+            <td class="py-3 px-4 text-right font-black text-blue-600">${row.credits}</td>
+          </tr>
+        `;
+      });
+
+      html += `</tbody></table>`;
+      container.innerHTML = html;
+    }
+
     function switchCoachSubTab(tab) {
-      ['calendar', 'slots', 'direct', 'billing'].forEach(t => {
+      ['calendar', 'roster', 'slots', 'direct', 'billing'].forEach(t => {
         document.getElementById(`coach-content-${t}`).classList.add('hidden');
         document.getElementById(`coach-tab-${t}`).className = 'px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900';
       });
@@ -1313,6 +1595,7 @@
         renderCoachCalendarDays();
         renderCoachDaySummary();
       }
+      if (tab === 'roster') renderCoachRoster();
       if (tab === 'direct') populateCoachStudentSelect();
       if (tab === 'billing') renderInvoices();
     }
@@ -1323,14 +1606,23 @@
       renderCoachDashboardMetrics();
       renderCoachCalendarDays();
       renderCoachDaySummary();
+      renderCoachRoster();
       renderCoachPublishedSlots();
       populateCoachStudentSelect();
     }
 
     // COACH MASTER CALENDAR
     function navigateCoachCalendarMonth(delta) {
-      navigateCalendarMonth(delta);
+      state.currentCalMonth += delta;
+      if (state.currentCalMonth < 0) {
+        state.currentCalMonth = 11;
+        state.currentCalYear--;
+      } else if (state.currentCalMonth > 11) {
+        state.currentCalMonth = 0;
+        state.currentCalYear++;
+      }
       renderCoachCalendarDays();
+      renderCoachDaySummary();
     }
 
     function renderCoachCalendarDays() {
@@ -1362,6 +1654,7 @@
           renderCoachCalendarDays();
           renderCoachDaySummary();
           renderCalendarDays();
+          renderCalendarWeeklyStrip();
           renderOpenSlots();
         };
 
@@ -1482,9 +1775,10 @@
       renderCoachDaySummary();
       renderCoachDashboardMetrics();
       renderCalendarDays();
+      renderCalendarWeeklyStrip();
       renderOpenSlots();
 
-      alert(`Open slot for ${state.selectedCalDate} at ${formatTimeDisplay(normalizedTime)} is now live across the parent portal and master calendar!`);
+      alert(`Open slot for ${state.selectedCalDate} at ${formatTimeDisplay(normalizedTime)} is live!`);
     }
 
     async function quickAddSlot(timeStr) {
@@ -1506,6 +1800,7 @@
       renderCoachDaySummary();
       renderCoachDashboardMetrics();
       renderCalendarDays();
+      renderCalendarWeeklyStrip();
       renderOpenSlots();
     }
 
@@ -1538,6 +1833,7 @@
       renderCoachDaySummary();
       renderCoachDashboardMetrics();
       renderCalendarDays();
+      renderCalendarWeeklyStrip();
       renderOpenSlots();
     }
 
@@ -1613,7 +1909,7 @@
       renderCoachDashboardMetrics();
       renderCoachCalendarDays();
       renderCoachDaySummary();
-      alert(`Lesson locked for ${athleteName} on ${date} at ${formatTimeDisplay(time)}! It is now live on the parent's dashboard.`);
+      alert(`Lesson locked for ${athleteName} on ${date} at ${formatTimeDisplay(time)}!`);
     }
 
     function renderInvoices() {
@@ -1685,7 +1981,12 @@
 
         renderParentPortalSession();
         renderCoachDashboardMetrics();
-        alert(`${credits} Credits have been loaded to your account! Please send $${price} via Venmo or Zelle. Coach RJ will confirm your payment receipt.`);
+        renderCoachRoster();
+
+        const bubble = document.getElementById('modal-insufficient-credit-bubble');
+        if (bubble) bubble.classList.add('hidden');
+
+        alert(`${credits} Credits loaded! Please send $${price} via Venmo or Zelle. Coach RJ will confirm receipt in the Command Center.`);
       }
     }
 
@@ -1705,7 +2006,6 @@
       return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${startIso}/${endIso}&details=${details}&location=${location}`;
     }
 
-    // STRICT TIME FORMATTER
     function formatTimeDisplay(timeStr) {
       if (!timeStr) return '';
       const clean = normalizeTimeString(timeStr);
