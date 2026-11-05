@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LessonFlow Pro - RJ Baseball Performance</title>
   <!-- Tailwind CSS CDN -->
-  https://script.google.com/macros/s/AKfycbxe9g44PjEJ-Ww2th4Exsu-Fjd79n6mNFdxSY4NeMorRwTcjjU1NRNCEk58YSmi4qOE1A/exec
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -32,6 +31,12 @@
         </div>
       </div>
 
+      <!-- CLOUD STATUS BADGE -->
+      <div id="cloud-sync-status" class="hidden sm:flex items-center space-x-2 text-[11px] font-semibold text-slate-400">
+        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        <span id="cloud-status-text">Cloud Sync Live</span>
+      </div>
+
       <!-- ROLE / PORTAL SWITCHER -->
       <nav id="role-nav-container" class="flex items-center space-x-1 bg-slate-900 p-1 rounded-xl border border-slate-800 text-xs font-bold">
         <button id="nav-btn-parent" onclick="switchMainView('parent')" class="px-3 py-1.5 rounded-lg text-white bg-blue-600 shadow">
@@ -40,7 +45,6 @@
         <button id="nav-btn-athlete" onclick="switchMainView('athlete')" class="px-3 py-1.5 rounded-lg text-slate-400 hover:text-white">
           Athlete Portal
         </button>
-        <!-- Instructor command center button guarded by PIN -->
         <button id="nav-btn-instructor" onclick="promptInstructorAccess()" class="px-3 py-1.5 rounded-lg text-slate-400 hover:text-white flex items-center space-x-1">
           <span>Coach Command Center</span>
           <span class="text-[10px] bg-slate-800 px-1 py-0.5 rounded text-slate-300">🔒</span>
@@ -181,8 +185,6 @@
 
         <!-- 1A: SCHEDULE LESSON VIEW -->
         <div id="parent-content-schedule" class="space-y-6">
-          
-          <!-- Month & Week Navigation -->
           <div class="flex flex-wrap items-center justify-between gap-4 bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
             <div class="flex items-center space-x-3">
               <h3 id="calendar-header-title" class="text-lg font-black tracking-tight text-slate-900">Current Schedule</h3>
@@ -195,17 +197,13 @@
             </div>
           </div>
 
-          <!-- Monthly Interactive Date Matrix -->
           <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm">
             <div class="grid grid-cols-7 gap-2 text-center text-xs font-extrabold text-slate-400 uppercase tracking-wider mb-2">
               <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
             </div>
-            <div id="calendar-days-grid" class="grid grid-cols-7 gap-2">
-              <!-- Dynamically populated days -->
-            </div>
+            <div id="calendar-days-grid" class="grid grid-cols-7 gap-2"></div>
           </div>
 
-          <!-- Open Lesson Slots For Selected Day -->
           <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4">
             <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
               <div>
@@ -214,13 +212,8 @@
               </div>
               <span class="text-xs font-bold text-slate-600">Rate: $100/hr • $150/90m • $200/2hr</span>
             </div>
-
-            <!-- Published Available Slots Stream -->
-            <div id="parent-open-slots-stream" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-              <!-- Dynamically populated buttons -->
-            </div>
+            <div id="parent-open-slots-stream" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3"></div>
           </div>
-
         </div>
 
         <!-- 1B: MY LESSONS & RECENT APPOINTMENTS -->
@@ -232,9 +225,7 @@
                 <p class="text-xs text-slate-500">Cancellations made 24+ hours in advance automatically reload credits to your account.</p>
               </div>
             </div>
-            <div id="parent-scheduled-lessons-list" class="space-y-3">
-              <!-- Dynamically populated scheduled lessons -->
-            </div>
+            <div id="parent-scheduled-lessons-list" class="space-y-3"></div>
           </div>
         </div>
 
@@ -305,12 +296,9 @@
         </div>
       </div>
 
-      <!-- Athlete Schedule & History -->
       <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4">
         <h4 class="text-base font-black text-slate-900">My Upcoming Training Sessions</h4>
-        <div id="athlete-lessons-feed" class="space-y-3">
-          <!-- Dynamically populated upcoming training cards -->
-        </div>
+        <div id="athlete-lessons-feed" class="space-y-3"></div>
       </div>
     </div>
 
@@ -318,7 +306,6 @@
     <!-- 3. INSTRUCTOR COMMAND CENTER (COACH ONLY)   -->
     <!-- ========================================== -->
     <div id="view-instructor" class="space-y-6 hidden">
-      <!-- Instructor Header & Tab Bar -->
       <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm flex flex-wrap items-center justify-between gap-4">
         <div>
           <h2 class="text-xl font-black text-slate-900">Coach RJ Command Center</h2>
@@ -337,7 +324,7 @@
         </div>
       </div>
 
-      <!-- COACH TAB 1: PUBLISH OPEN SLOTS FOR PARENTS -->
+      <!-- COACH TAB 1: PUBLISH OPEN SLOTS -->
       <div id="coach-content-slots" class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div class="md:col-span-1 bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4">
           <h4 class="text-base font-black text-slate-900">Publish Open Slot</h4>
@@ -373,27 +360,22 @@
           </div>
         </div>
 
-        <!-- Published Slots List -->
         <div class="md:col-span-2 bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4">
           <div class="flex items-center justify-between border-b border-slate-100 pb-3">
             <h4 class="text-base font-black text-slate-900">Active Published Slots</h4>
             <span class="text-xs font-semibold text-slate-500">Auto-repopulates upon cancellation</span>
           </div>
-          <div id="coach-published-slots-list" class="space-y-2">
-            <!-- Dynamically populated published slots -->
-          </div>
+          <div id="coach-published-slots-list" class="space-y-2"></div>
         </div>
       </div>
 
-      <!-- COACH TAB 2: DIRECT MANUAL SCHEDULING (ONE-BY-ONE) -->
+      <!-- COACH TAB 2: DIRECT MANUAL SCHEDULING -->
       <div id="coach-content-direct" class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4 max-w-xl mx-auto hidden">
         <h4 class="text-base font-black text-slate-900">Add Lesson to Schedule Manually</h4>
         <form onsubmit="handleCoachDirectBook(event)" class="space-y-3 text-xs">
           <div>
             <label class="block font-bold text-slate-700 mb-1">Athlete / Family</label>
-            <select id="direct-book-student" required class="w-full px-3 py-2 border rounded-xl font-semibold">
-              <!-- Populated with students -->
-            </select>
+            <select id="direct-book-student" required class="w-full px-3 py-2 border rounded-xl font-semibold"></select>
           </div>
           <div class="grid grid-cols-2 gap-3">
             <div>
@@ -419,7 +401,7 @@
               <select id="direct-book-payment" class="w-full px-3 py-2 border rounded-xl font-semibold">
                 <option value="credit">Deduct Package Credit</option>
                 <option value="venmo">Venmo (@Richard-James-256)</option>
-                <option value="zelle">Zelle (346-660-1074)</option>
+                <option value="zelle">Zelle (346-660-1074 - Richard James)</option>
                 <option value="cash">Cash at Session</option>
               </select>
             </div>
@@ -438,17 +420,13 @@
             <p class="text-xs text-slate-500">Confirm Venmo (@Richard-James-256), Zelle (346-660-1074 - Richard James), or cash payments.</p>
           </div>
         </div>
-        <div id="coach-invoices-feed" class="space-y-2">
-          <!-- Dynamically populated invoice ledger -->
-        </div>
+        <div id="coach-invoices-feed" class="space-y-2"></div>
       </div>
     </div>
 
   </main>
 
-  <!-- ========================================== -->
-  <!-- MODAL: BOOK LESSON CONFIRMATION            -->
-  <!-- ========================================== -->
+  <!-- MODAL: BOOK LESSON CONFIRMATION -->
   <div id="modal-book-slot" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-start justify-center pt-16 sm:pt-24 px-4 hidden">
     <div class="bg-white rounded-2xl border border-slate-200 max-w-md w-full p-6 shadow-2xl space-y-5">
       <div class="flex items-center justify-between border-b border-slate-100 pb-3">
@@ -494,9 +472,7 @@
     </div>
   </div>
 
-  <!-- ========================================== -->
-  <!-- MODAL: CANCELLATION & POLICY MODAL         -->
-  <!-- ========================================== -->
+  <!-- MODAL: CANCELLATION & POLICY MODAL -->
   <div id="modal-cancel-lesson" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-start justify-center pt-16 sm:pt-24 px-4 hidden">
     <div class="bg-white rounded-2xl border border-slate-200 max-w-md w-full p-6 shadow-2xl space-y-4">
       <div class="flex items-center justify-between border-b border-slate-100 pb-3">
@@ -504,9 +480,7 @@
         <button onclick="closeCancelModal()" class="text-slate-400 hover:text-slate-700 font-bold text-lg">✕</button>
       </div>
 
-      <div id="cancel-modal-content" class="text-xs space-y-3">
-        <!-- Evaluated 24-hr policy statement -->
-      </div>
+      <div id="cancel-modal-content" class="text-xs space-y-3"></div>
 
       <div class="pt-3 flex items-center space-x-2">
         <button onclick="closeCancelModal()" class="w-1/2 py-2.5 rounded-xl border border-slate-200 font-bold text-xs text-slate-600">Keep Lesson</button>
@@ -519,14 +493,16 @@
   <!-- JAVASCRIPT APPLICATION CORE                -->
   <!-- ========================================== -->
   <script>
-    // System dynamic date
+    // --- 1. SYSTEM CONFIGURATION & CLOUD ENDPOINT ---
     const todayObj = new Date();
     const pad = n => String(n).padStart(2, '0');
     const CURRENT_SYSTEM_DATE = `${todayObj.getFullYear()}-${pad(todayObj.getMonth() + 1)}-${pad(todayObj.getDate())}`;
-
-    // Security PIN for Coach RJ
     const COACH_SECURITY_PIN = "Ballislife123!";
-    
+
+    // PASTE YOUR DEPLOYED GOOGLE APPS SCRIPT WEB APP URL HERE:
+    const GOOGLE_SHEET_API_URL = "https://script.google.com/macros/s/AKfycbz3nwL06w9kcxzBFRbdtTqHPEb9shv6HieBWiBJk5-CL4EVm-Ie-EmBOBE8WemED07Qiw/exec";
+
+    // --- 2. LOCAL APPLICATION STATE ---
     let state = {
       userRole: 'parent',
       currentParent: null,
@@ -536,25 +512,82 @@
       activeDuration: 60,
       activeSlotIdForBooking: null,
       activeLessonIdToCancel: null,
-      
-      // Dynamic Registered Accounts
       parents: [],
-
-      // Published slots open for booking
       publishedSlots: [
         { id: 'SLOT-1', date: CURRENT_SYSTEM_DATE, time: '15:30', status: 'open' },
         { id: 'SLOT-2', date: CURRENT_SYSTEM_DATE, time: '16:45', status: 'open' },
         { id: 'SLOT-3', date: CURRENT_SYSTEM_DATE, time: '18:00', status: 'open' }
       ],
-
-      // Booked Lessons
       lessons: [],
-
-      // Invoices
       invoices: []
     };
 
-    // Load from LocalStorage
+    // --- 3. TWO-WAY GOOGLE SHEETS CLOUD SYNC ENGINE ---
+
+    // Pull database updates across all devices
+    async function syncFromCloud() {
+      if (!GOOGLE_SHEET_API_URL || GOOGLE_SHEET_API_URL.includes("YOUR_SCRIPT_ID_HERE")) return;
+      try {
+        const res = await fetch(`${GOOGLE_SHEET_API_URL}?action=getData`);
+        const result = await res.json();
+        if (result.status === 'success' && result.data) {
+          if (Array.isArray(result.data.slots)) state.publishedSlots = result.data.slots;
+          if (Array.isArray(result.data.lessons)) state.lessons = result.data.lessons;
+          if (Array.isArray(result.data.parents)) state.parents = result.data.parents;
+          if (Array.isArray(result.data.invoices)) state.invoices = result.data.invoices;
+
+          // Keep active parent object synchronized with latest credits
+          if (state.currentParent) {
+            const freshParent = state.parents.find(p => p.email.toLowerCase() === state.currentParent.email.toLowerCase());
+            if (freshParent) state.currentParent = freshParent;
+          }
+
+          saveState();
+
+          // Refresh UI
+          renderCalendarDays();
+          renderOpenSlots();
+          renderScheduledLessons();
+          renderAthleteView();
+
+          if (!document.getElementById('view-instructor').classList.contains('hidden')) {
+            renderCoachPublishedSlots();
+            renderInvoices();
+            populateCoachStudentSelect();
+          }
+
+          const statusBadge = document.getElementById('cloud-status-text');
+          if (statusBadge) statusBadge.innerText = `Synced (${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })})`;
+        }
+      } catch (err) {
+        console.warn("Background cloud sync fetch error (will retry automatically):", err);
+      }
+    }
+
+    // Push local state updates up to Google Sheets
+    async function syncToCloud() {
+      saveState(); // Keep local storage updated
+      if (!GOOGLE_SHEET_API_URL || GOOGLE_SHEET_API_URL.includes("YOUR_SCRIPT_ID_HERE")) return;
+
+      try {
+        await fetch(GOOGLE_SHEET_API_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "syncState",
+            slots: state.publishedSlots,
+            lessons: state.lessons,
+            parents: state.parents,
+            invoices: state.invoices
+          })
+        });
+      } catch (err) {
+        console.error("Cloud push failed:", err);
+      }
+    }
+
+    // Load from LocalStorage fallback
     function loadState() {
       const saved = localStorage.getItem('lessonflow_state_rj');
       if (saved) {
@@ -670,7 +703,6 @@
       const athletes = [{ id: 'ATH-' + Date.now(), name: a1, level: a1Level }];
       if (a2) athletes.push({ id: 'ATH-' + (Date.now() + 1), name: a2, level: a2Level || 'Youth Baseball' });
 
-      // Expiration 30 days from now
       const expDate = new Date();
       expDate.setDate(expDate.getDate() + 30);
       const expDateStr = `${expDate.getFullYear()}-${pad(expDate.getMonth() + 1)}-${pad(expDate.getDate())}`;
@@ -688,6 +720,7 @@
       state.parents.push(newParent);
       state.currentParent = newParent;
       saveState();
+      syncToCloud(); // Sync new parent to Google Sheets
       renderParentPortalSession();
     }
 
@@ -711,7 +744,7 @@
       document.getElementById('active-parent-name').innerText = state.currentParent.name;
       const athleteSummary = (state.currentParent.athletes || []).map(a => `${a.name} (${a.level})`).join(', ');
       document.getElementById('active-parent-athletes').innerText = 'Athletes: ' + (athleteSummary || 'None registered');
-      document.getElementById('parent-credit-badge').innerText = `${state.currentParent.credits.toFixed(1)} Credits (Valid thru ${state.currentParent.creditExpires})`;
+      document.getElementById('parent-credit-badge').innerText = `${Number(state.currentParent.credits || 0).toFixed(1)} Credits (Valid thru ${state.currentParent.creditExpires || '30 days'})`;
 
       renderCalendarDays();
       renderOpenSlots();
@@ -842,7 +875,7 @@
       });
     }
 
-    // BOOKING MODAL LOGIC (FIXED: Populates strictly from current logged in parent's athlete list)
+    // BOOKING MODAL LOGIC
     function openBookModal(slotId) {
       if (!state.currentParent) {
         alert("Please sign in or register to book a lesson slot.");
@@ -854,7 +887,6 @@
 
       document.getElementById('modal-slot-datetime').innerText = `${slot.date} @ ${formatTimeDisplay(slot.time)}`;
 
-      // Strict user-specific athlete population
       const sel = document.getElementById('modal-select-athlete');
       sel.innerHTML = '';
       
@@ -894,7 +926,7 @@
       state.activeSlotIdForBooking = null;
     }
 
-    function confirmSlotBooking() {
+    async function confirmSlotBooking() {
       const slot = state.publishedSlots.find(s => s.id === state.activeSlotIdForBooking);
       if (!slot || !state.currentParent) return;
 
@@ -904,17 +936,16 @@
       const creditsNeeded = state.activeDuration / 60;
 
       if (paymentMethod === 'credit') {
-        if (state.currentParent.credits < creditsNeeded) {
-          alert(`Insufficient credits (${state.currentParent.credits.toFixed(1)} available, ${creditsNeeded.toFixed(1)} needed). Please select Venmo, Zelle, Cash, or purchase a package.`);
+        if (Number(state.currentParent.credits || 0) < creditsNeeded) {
+          alert(`Insufficient credits (${Number(state.currentParent.credits || 0).toFixed(1)} available, ${creditsNeeded.toFixed(1)} needed). Please select Venmo, Zelle, Cash, or purchase a package.`);
           return;
         }
-        state.currentParent.credits -= creditsNeeded;
+        state.currentParent.credits = Number(state.currentParent.credits) - creditsNeeded;
       }
 
       // Mark slot as booked
       slot.status = 'booked';
 
-      // Create Lesson linked to the logged-in parent and selected athlete
       const newLesson = {
         id: 'LES-' + Date.now(),
         slotId: slot.id,
@@ -929,7 +960,6 @@
       };
       state.lessons.push(newLesson);
 
-      // Create Invoice
       state.invoices.unshift({
         id: 'INV-' + Date.now().toString().slice(-4),
         date: slot.date,
@@ -941,6 +971,7 @@
       });
 
       saveState();
+      syncToCloud(); // Sync slot status, lesson, invoice, and credits to Google Sheets
       closeBookModal();
       renderParentPortalSession();
       alert(`Lesson confirmed for ${athlete} on ${slot.date} at ${formatTimeDisplay(slot.time)}!`);
@@ -1023,7 +1054,7 @@
       state.activeLessonIdToCancel = null;
     }
 
-    function executeLessonCancellation() {
+    async function executeLessonCancellation() {
       const lessonId = state.activeLessonIdToCancel;
       const lesson = state.lessons.find(l => l.id === lessonId);
       if (!lesson) return;
@@ -1034,10 +1065,10 @@
 
       if (diffHours >= 24 && lesson.paymentStatus === 'paid_credit') {
         const parent = state.parents.find(p => p.email.toLowerCase() === lesson.parentEmail.toLowerCase());
-        if (parent) parent.credits += (lesson.duration / 60);
+        if (parent) parent.credits = Number(parent.credits || 0) + (lesson.duration / 60);
       }
 
-      // Slot repopulates automatically
+      // Slot repopulates automatically across all browsers
       const originalSlot = state.publishedSlots.find(s => s.id === lesson.slotId);
       if (originalSlot) {
         originalSlot.status = 'open';
@@ -1053,6 +1084,7 @@
       state.lessons = state.lessons.filter(l => l.id !== lessonId);
 
       saveState();
+      syncToCloud(); // Sync slot reopening & lesson deletion to Google Sheets
       closeCancelModal();
       renderParentPortalSession();
       alert('Lesson cancelled. The time slot has repopulated on the booking calendar.');
@@ -1072,7 +1104,7 @@
       const ath = state.currentParent.athletes[0];
       document.getElementById('athlete-display-name').innerText = ath.name;
       document.getElementById('athlete-display-level').innerText = (ath.level || 'Athlete') + ' • RJ Baseball Performance';
-      document.getElementById('athlete-credits-count').innerText = state.currentParent.credits.toFixed(1);
+      document.getElementById('athlete-credits-count').innerText = Number(state.currentParent.credits || 0).toFixed(1);
 
       const feed = document.getElementById('athlete-lessons-feed');
       feed.innerHTML = '';
@@ -1120,7 +1152,7 @@
       populateCoachStudentSelect();
     }
 
-    function handleCoachPublishSlot(e) {
+    async function handleCoachPublishSlot(e) {
       e.preventDefault();
       const date = document.getElementById('slot-pub-date').value;
       const time = document.getElementById('slot-pub-time').value;
@@ -1133,11 +1165,12 @@
       });
 
       saveState();
+      syncToCloud(); // Sync newly published slot to Google Sheets
       renderCoachPublishedSlots();
       alert(`Open slot for ${date} at ${formatTimeDisplay(time)} is now live for parents!`);
     }
 
-    function quickAddSlot(timeStr) {
+    async function quickAddSlot(timeStr) {
       state.publishedSlots.push({
         id: 'SLOT-' + Date.now(),
         date: CURRENT_SYSTEM_DATE,
@@ -1145,6 +1178,7 @@
         status: 'open'
       });
       saveState();
+      syncToCloud();
       renderCoachPublishedSlots();
     }
 
@@ -1168,9 +1202,10 @@
       });
     }
 
-    function removePublishedSlot(slotId) {
+    async function removePublishedSlot(slotId) {
       state.publishedSlots = state.publishedSlots.filter(s => s.id !== slotId);
       saveState();
+      syncToCloud();
       renderCoachPublishedSlots();
     }
 
@@ -1193,7 +1228,7 @@
       });
     }
 
-    function handleCoachDirectBook(e) {
+    async function handleCoachDirectBook(e) {
       e.preventDefault();
       const studentVal = document.getElementById('direct-book-student').value;
       if (!studentVal || !studentVal.includes('|')) {
@@ -1232,6 +1267,7 @@
       });
 
       saveState();
+      syncToCloud();
       alert(`Lesson locked for ${athleteName} on ${date} at ${formatTimeDisplay(time)}!`);
     }
 
@@ -1260,14 +1296,15 @@
       });
     }
 
-    function confirmInvoicePaid(invId) {
+    async function confirmInvoicePaid(invId) {
       const inv = state.invoices.find(i => i.id === invId);
       if (inv) inv.status = 'Paid';
       saveState();
+      syncToCloud();
       renderInvoices();
     }
 
-    function promptPackagePurchase(credits, price) {
+    async function promptPackagePurchase(credits, price) {
       if (!state.currentParent) {
         alert("Please log in or register before buying a package.");
         return;
@@ -1290,6 +1327,7 @@
           status: 'Unpaid'
         });
         saveState();
+        syncToCloud();
         alert("Invoice generated! Coach RJ will confirm your payment and activate your credits.");
       }
     }
@@ -1320,11 +1358,17 @@
       return `${h}:${minutes} ${ampm}`;
     }
 
-    // INITIALIZATION ON LOAD
-    window.onload = function() {
+    // INITIALIZATION & LIVE POLLING
+    window.onload = async function() {
       loadState();
       switchMainView('parent');
       renderParentPortalSession();
+
+      // Initial cloud pull
+      await syncFromCloud();
+
+      // Poll Google Sheets every 10 seconds for real-time updates across devices
+      setInterval(syncFromCloud, 10000);
     };
   </script>
 </body>
