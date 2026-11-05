@@ -303,7 +303,7 @@
     <!-- ========================================== -->
     <div id="view-instructor" class="space-y-6 hidden">
       
-      <!-- STAT BUBBLES: UNPAID, MONTHLY REVENUE, ACTIVE STUDENTS, SCHEDULED LESSONS -->
+      <!-- STAT BUBBLES -->
       <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
           <span class="text-[11px] font-extrabold uppercase text-slate-400 block tracking-wider">Unpaid / Due</span>
@@ -354,7 +354,7 @@
         </div>
       </div>
 
-      <!-- COACH TAB 0: UNIFIED MASTER CALENDAR (Open Slots + Booked Lessons) -->
+      <!-- COACH TAB 0: UNIFIED MASTER CALENDAR -->
       <div id="coach-content-calendar" class="space-y-6">
         <div class="flex flex-wrap items-center justify-between gap-4 bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
           <div class="flex items-center space-x-3">
@@ -379,12 +379,10 @@
         <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4">
           <h4 id="coach-selected-day-heading" class="text-base font-black text-slate-900">Schedule for Selected Date</h4>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <!-- Booked Lessons List -->
             <div class="p-4 rounded-xl border border-blue-200 bg-blue-50/40 space-y-3">
               <span class="text-xs font-extrabold uppercase text-blue-900 block">Booked Lessons</span>
               <div id="coach-day-booked-lessons" class="space-y-2"></div>
             </div>
-            <!-- Open Slots List -->
             <div class="p-4 rounded-xl border border-emerald-200 bg-emerald-50/40 space-y-3">
               <span class="text-xs font-extrabold uppercase text-emerald-900 block">Open Published Slots</span>
               <div id="coach-day-open-slots" class="space-y-2"></div>
@@ -438,7 +436,7 @@
         </div>
       </div>
 
-      <!-- COACH TAB 2: DIRECT MANUAL SCHEDULING (Updates slots + lessons) -->
+      <!-- COACH TAB 2: DIRECT MANUAL SCHEDULING -->
       <div id="coach-content-direct" class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4 max-w-xl mx-auto hidden">
         <h4 class="text-base font-black text-slate-900">Add Lesson to Schedule Manually</h4>
         <form onsubmit="handleCoachDirectBook(event)" class="space-y-3 text-xs">
@@ -588,7 +586,6 @@
     };
 
     // --- TWO-WAY GOOGLE SHEETS CLOUD SYNC ENGINE ---
-   // --- TWO-WAY GOOGLE SHEETS CLOUD SYNC ENGINE ---
     async function syncFromCloud() {
       if (!GOOGLE_SHEET_API_URL || GOOGLE_SHEET_API_URL.includes("YOUR_SCRIPT_ID_HERE")) return;
       try {
@@ -599,7 +596,6 @@
           if (Array.isArray(result.data.slots) && result.data.slots.length > 0) {
             state.publishedSlots = result.data.slots;
           } else if (state.publishedSlots.length > 0) {
-            // If cloud is empty but local has slots, push local slots to cloud to seed it
             syncToCloud();
           }
 
@@ -613,7 +609,6 @@
             state.invoices = result.data.invoices;
           }
 
-          // Re-sync logged-in parent
           if (state.currentParent) {
             const fresh = state.parents.find(p => p.email.toLowerCase() === state.currentParent.email.toLowerCase());
             if (fresh) state.currentParent = fresh;
@@ -621,32 +616,6 @@
 
           saveState();
 
-          // Refresh UI
-          renderCalendarDays();
-          renderOpenSlots();
-          renderScheduledLessons();
-          renderAthleteView();
-          renderCoachDashboardMetrics();
-          renderCoachCalendarDays();
-          renderCoachDaySummary();
-
-          if (!document.getElementById('view-instructor').classList.contains('hidden')) {
-            renderCoachPublishedSlots();
-            renderInvoices();
-            populateCoachStudentSelect();
-          }
-
-          const statusBadge = document.getElementById('cloud-status-text');
-          if (statusBadge) statusBadge.innerText = `Synced (${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })})`;
-        }
-      } catch (err) {
-        console.warn("Cloud sync fetch retry:", err);
-      }
-    }
-
-          saveState();
-
-          // Refresh UI
           renderCalendarDays();
           renderOpenSlots();
           renderScheduledLessons();
@@ -1169,7 +1138,6 @@
         if (parent) parent.credits = Number(parent.credits || 0) + (lesson.duration / 60);
       }
 
-      // Slot repopulates automatically
       const originalSlot = state.publishedSlots.find(s => s.id === lesson.slotId);
       if (originalSlot) {
         originalSlot.status = 'open';
@@ -1235,26 +1203,22 @@
 
     // --- COACH COMMAND CENTER & METRIC BUBBLES ---
     function renderCoachDashboardMetrics() {
-      // 1. Unpaid / Due Invoices
       const unpaidInvoices = state.invoices.filter(i => i.status !== 'Paid');
       const unpaidTotal = unpaidInvoices.reduce((sum, i) => sum + Number(i.amount || 0), 0);
       document.getElementById('metric-unpaid-amount').innerText = `$${unpaidTotal}`;
       document.getElementById('metric-unpaid-count').innerText = `(${unpaidInvoices.length} due)`;
 
-      // 2. Monthly Revenue (paid invoices this month)
       const currentYearMonth = `${todayObj.getFullYear()}-${pad(todayObj.getMonth() + 1)}`;
       const paidThisMonth = state.invoices.filter(i => i.status === 'Paid' && i.date && i.date.startsWith(currentYearMonth));
       const monthlyTotal = paidThisMonth.reduce((sum, i) => sum + Number(i.amount || 0), 0);
       document.getElementById('metric-monthly-revenue').innerText = `$${monthlyTotal}`;
 
-      // 3. Active Students (count distinct registered athletes)
       let studentCount = 0;
       state.parents.forEach(p => {
         studentCount += (p.athletes ? p.athletes.length : 0);
       });
       document.getElementById('metric-active-students').innerText = studentCount;
 
-      // 4. Scheduled Lessons (all confirmed future lessons)
       document.getElementById('metric-scheduled-lessons').innerText = state.lessons.length;
     }
 
@@ -1285,7 +1249,7 @@
       populateCoachStudentSelect();
     }
 
-    // COACH MASTER CALENDAR (Open Slots + Booked Lessons at the same time)
+    // COACH MASTER CALENDAR
     function navigateCoachCalendarMonth(delta) {
       navigateCalendarMonth(delta);
       renderCoachCalendarDays();
@@ -1352,7 +1316,6 @@
       const formatted = dateObj.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' });
       heading.innerText = `Coach Master Schedule: ${formatted}`;
 
-      // 1. Booked lessons on this date
       const bookedFeed = document.getElementById('coach-day-booked-lessons');
       bookedFeed.innerHTML = '';
       const dayLessons = state.lessons.filter(l => l.date === state.selectedCalDate);
@@ -1374,7 +1337,6 @@
         });
       }
 
-      // 2. Open slots on this date
       const slotsFeed = document.getElementById('coach-day-open-slots');
       slotsFeed.innerHTML = '';
       const daySlots = state.publishedSlots.filter(s => s.date === state.selectedCalDate && s.status === 'open');
@@ -1479,7 +1441,6 @@
       });
     }
 
-    // Direct booking creates both a booked slot AND a confirmed lesson so it appears everywhere
     async function handleCoachDirectBook(e) {
       e.preventDefault();
       const studentVal = document.getElementById('direct-book-student').value;
@@ -1496,7 +1457,6 @@
 
       const slotId = 'SLOT-DIR-' + Date.now();
       
-      // 1. Add booked slot to publishedSlots
       state.publishedSlots.push({
         id: slotId,
         date: date,
@@ -1504,7 +1464,6 @@
         status: 'booked'
       });
 
-      // 2. Add lesson
       const newLesson = {
         id: 'LES-DIRECT-' + Date.now(),
         slotId: slotId,
@@ -1519,7 +1478,6 @@
       };
       state.lessons.push(newLesson);
 
-      // 3. Add invoice
       state.invoices.unshift({
         id: 'INV-' + Date.now().toString().slice(-4),
         date: date,
@@ -1634,7 +1592,7 @@
       renderCoachDashboardMetrics();
 
       await syncFromCloud();
-      setInterval(syncFromCloud, 5000); // 5-second live refresh
+      setInterval(syncFromCloud, 5000);
     };
   </script>
 </body>
