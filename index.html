@@ -630,8 +630,11 @@
         </div>
 
         <div>
-          <label class="block font-bold text-slate-700 mb-1">Payment Method</label>
-          <select id="modal-select-payment" onchange="checkCreditAvailability()" class="w-full px-3 py-2 border rounded-xl font-semibold">
+          <div class="flex items-center justify-between mb-1">
+            <label class="block font-bold text-slate-700">Payment Method</label>
+            <span id="standing-locked-badge" class="text-[10px] font-bold text-blue-700 bg-blue-100 px-2 py-0.5 rounded hidden">Locked to Credits (Standing Mode)</span>
+          </div>
+          <select id="modal-select-payment" onchange="checkCreditAvailability()" class="w-full px-3 py-2 border rounded-xl font-semibold bg-white text-slate-900 transition">
             <option value="credit">Use Active Credit</option>
             <option value="venmo">Venmo (@Richard-James-256)</option>
             <option value="zelle">Zelle (346-660-1074 - Richard James)</option>
@@ -811,7 +814,6 @@
       }
     }
 
-    // Helper to send email request to Google Apps Script (MailApp)
     async function sendBookingNotificationEmail(bookingDetails) {
       if (!GOOGLE_SHEET_API_URL || GOOGLE_SHEET_API_URL.includes("YOUR_SCRIPT_ID_HERE")) return;
       try {
@@ -1220,7 +1222,7 @@
       });
     }
 
-    // BOOKING MODAL LOGIC
+    // BOOKING MODAL LOGIC WITH PAYMENT TOGGLE FIX
     function openBookModal(slotId) {
       if (!state.currentParent) {
         alert("Please sign in or register to book a lesson slot.");
@@ -1232,11 +1234,19 @@
       if (!slot) return;
 
       document.getElementById('modal-slot-datetime').innerText = `${normalizeDateString(slot.date)} @ ${formatTimeDisplay(slot.time)}`;
-      document.getElementById('modal-standing-toggle').checked = false;
+      
+      // Ensure clean reset of toggle and payment input
+      const standingToggle = document.getElementById('modal-standing-toggle');
+      standingToggle.checked = false;
 
+      const paymentSel = document.getElementById('modal-select-payment');
+      paymentSel.disabled = false;
+      paymentSel.classList.remove('bg-slate-100', 'cursor-not-allowed', 'opacity-75');
+      document.getElementById('standing-locked-badge').classList.add('hidden');
+
+      // Populate athletes
       const sel = document.getElementById('modal-select-athlete');
       sel.innerHTML = '';
-      
       const athletes = state.currentParent.athletes || [];
       if (athletes.length === 0) {
         const opt = document.createElement('option');
@@ -1272,20 +1282,29 @@
       checkCreditAvailability();
     }
 
+    // Toggle standing mode without freezing payment select element
     function toggleStandingMode(checked) {
       state.isStandingReservation = checked;
       const paymentSel = document.getElementById('modal-select-payment');
+      const lockedBadge = document.getElementById('standing-locked-badge');
+
       if (checked) {
         paymentSel.value = 'credit';
         paymentSel.disabled = true;
+        paymentSel.classList.add('bg-slate-100', 'cursor-not-allowed', 'opacity-75');
+        lockedBadge.classList.remove('hidden');
       } else {
         paymentSel.disabled = false;
+        paymentSel.classList.remove('bg-slate-100', 'cursor-not-allowed', 'opacity-75');
+        lockedBadge.classList.add('hidden');
       }
       checkCreditAvailability();
     }
 
+    // Evaluate balance and show prompt bubble only when credit payment is chosen
     function checkCreditAvailability() {
-      const paymentMethod = document.getElementById('modal-select-payment').value;
+      const paymentSel = document.getElementById('modal-select-payment');
+      const paymentMethod = paymentSel ? paymentSel.value : 'credit';
       const bubble = document.getElementById('modal-insufficient-credit-bubble');
       
       if (paymentMethod === 'credit' && state.currentParent) {
@@ -1577,7 +1596,6 @@
       document.getElementById('metric-scheduled-lessons').innerText = state.lessons.length;
     }
 
-    // ATHLETE & PARENT DIRECTORY TABLE
     function renderCoachRoster() {
       const container = document.getElementById('coach-roster-directory-table');
       if (!container) return;
@@ -1668,7 +1686,6 @@
       populateCoachStudentSelect();
     }
 
-    // COACH MASTER CALENDAR
     function navigateCoachCalendarMonth(delta) {
       state.currentCalMonth += delta;
       if (state.currentCalMonth < 0) {
@@ -1842,7 +1859,6 @@
       alert(`Open slot for ${state.selectedCalDate} at ${formatTimeDisplay(normalizedTime)} is live!`);
     }
 
-    // SINGLE PRESET APPLIED TO SELECTED DATE
     async function quickAddSlot(timeStr) {
       const datePicker = document.getElementById('slot-pub-date');
       const targetDate = (datePicker && datePicker.value) ? datePicker.value : CURRENT_SYSTEM_DATE;
@@ -1876,7 +1892,6 @@
       renderOpenSlots();
     }
 
-    // 1-CLICK BATCH PUBLISH FULL AFTERNOON SCHEDULE
     async function batchPublishSlots(timeArray) {
       const datePicker = document.getElementById('slot-pub-date');
       const targetDate = (datePicker && datePicker.value) ? datePicker.value : CURRENT_SYSTEM_DATE;
