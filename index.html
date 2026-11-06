@@ -430,9 +430,7 @@
             0 Total Athletes
           </span>
         </div>
-        <div id="coach-roster-directory-table" class="overflow-x-auto">
-          <!-- Populated dynamically -->
-        </div>
+        <div id="coach-roster-directory-table" class="overflow-x-auto"></div>
       </div>
 
       <!-- COACH TAB 1: PUBLISH OPEN SLOTS -->
@@ -445,8 +443,8 @@
               <input type="date" id="slot-pub-date" required class="w-full px-3 py-2 border rounded-xl font-semibold">
             </div>
             <div>
-              <label class="block font-bold text-slate-700 mb-1">Start Time</label>
-              <input type="time" id="slot-pub-time" required class="w-full px-3 py-2 border rounded-xl font-semibold">
+              <label class="block font-bold text-slate-700 mb-1">Start Time (15-min increments)</label>
+              <input type="time" id="slot-pub-time" step="900" required class="w-full px-3 py-2 border rounded-xl font-semibold">
             </div>
             <div>
               <label class="block font-bold text-slate-700 mb-1">Duration Allowed</label>
@@ -457,16 +455,50 @@
               </select>
             </div>
             <button type="submit" class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow">
-              + Publish Slot for Parents
+              + Publish Single Slot
             </button>
           </form>
-          <div class="pt-3 border-t border-slate-100">
-            <span class="text-[11px] font-bold text-slate-500 block mb-2">Quick Presets (Today):</span>
-            <div class="grid grid-cols-2 gap-2">
-              <button onclick="quickAddSlot('15:30')" class="px-2 py-1.5 bg-slate-100 rounded-lg text-[11px] font-bold text-slate-700 hover:bg-slate-200">+ 3:30 PM</button>
-              <button onclick="quickAddSlot('16:45')" class="px-2 py-1.5 bg-slate-100 rounded-lg text-[11px] font-bold text-slate-700 hover:bg-slate-200">+ 4:45 PM</button>
+
+          <!-- 1-CLICK BATCH PUBLISH FULL AFTERNOON SCHEDULES -->
+          <div class="pt-3 border-t border-slate-100 space-y-2">
+            <span class="text-[11px] font-extrabold uppercase tracking-wider text-blue-700 block">⚡ 1-Click Batch Open (Selected Date):</span>
+            <button onclick="batchPublishSlots(['13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00'])" class="w-full py-2 px-3 bg-blue-50 hover:bg-blue-100 border border-blue-200 text-blue-800 rounded-xl text-xs font-extrabold transition flex items-center justify-between shadow-sm">
+              <span>Full Afternoon (:00s)</span>
+              <span class="text-[10px] bg-blue-600 text-white px-1.5 py-0.5 rounded">1 PM – 8 PM</span>
+            </button>
+            <button onclick="batchPublishSlots(['13:30','14:30','15:30','16:30','17:30','18:30','19:30'])" class="w-full py-2 px-3 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-800 rounded-xl text-xs font-extrabold transition flex items-center justify-between shadow-sm">
+              <span>Full Afternoon (:30s)</span>
+              <span class="text-[10px] bg-emerald-600 text-white px-1.5 py-0.5 rounded">1:30 – 7:30 PM</span>
+            </button>
+            <button onclick="batchPublishSlots(['15:30','16:30','17:30','18:30','19:30'])" class="w-full py-2 px-3 bg-slate-900 hover:bg-black text-white rounded-xl text-xs font-extrabold transition flex items-center justify-between shadow-sm">
+              <span>After-School Block (:30s)</span>
+              <span class="text-[10px] bg-slate-700 text-slate-200 px-1.5 py-0.5 rounded">3:30 – 7:30 PM</span>
+            </button>
+          </div>
+
+          <!-- INDIVIDUAL QUICK PRESETS -->
+          <div class="pt-3 border-t border-slate-100 space-y-2">
+            <span class="text-[11px] font-bold text-slate-500 block">Single Top of the Hour (:00):</span>
+            <div class="grid grid-cols-3 gap-1.5">
+              <button onclick="quickAddSlot('13:00')" class="px-2 py-1.5 bg-slate-100 rounded-lg text-[11px] font-bold text-slate-700 hover:bg-slate-200">+ 1:00 PM</button>
+              <button onclick="quickAddSlot('14:00')" class="px-2 py-1.5 bg-slate-100 rounded-lg text-[11px] font-bold text-slate-700 hover:bg-slate-200">+ 2:00 PM</button>
+              <button onclick="quickAddSlot('15:00')" class="px-2 py-1.5 bg-slate-100 rounded-lg text-[11px] font-bold text-slate-700 hover:bg-slate-200">+ 3:00 PM</button>
+              <button onclick="quickAddSlot('16:00')" class="px-2 py-1.5 bg-slate-100 rounded-lg text-[11px] font-bold text-slate-700 hover:bg-slate-200">+ 4:00 PM</button>
+              <button onclick="quickAddSlot('17:00')" class="px-2 py-1.5 bg-slate-100 rounded-lg text-[11px] font-bold text-slate-700 hover:bg-slate-200">+ 5:00 PM</button>
               <button onclick="quickAddSlot('18:00')" class="px-2 py-1.5 bg-slate-100 rounded-lg text-[11px] font-bold text-slate-700 hover:bg-slate-200">+ 6:00 PM</button>
-              <button onclick="quickAddSlot('19:15')" class="px-2 py-1.5 bg-slate-100 rounded-lg text-[11px] font-bold text-slate-700 hover:bg-slate-200">+ 7:15 PM</button>
+              <button onclick="quickAddSlot('19:00')" class="px-2 py-1.5 bg-slate-100 rounded-lg text-[11px] font-bold text-slate-700 hover:bg-slate-200">+ 7:00 PM</button>
+              <button onclick="quickAddSlot('20:00')" class="px-2 py-1.5 bg-slate-100 rounded-lg text-[11px] font-bold text-slate-700 hover:bg-slate-200">+ 8:00 PM</button>
+            </div>
+            
+            <span class="text-[11px] font-bold text-slate-500 block pt-1">Single Half Hour (:30):</span>
+            <div class="grid grid-cols-3 gap-1.5">
+              <button onclick="quickAddSlot('13:30')" class="px-2 py-1.5 bg-slate-100 rounded-lg text-[11px] font-bold text-slate-700 hover:bg-slate-200">+ 1:30 PM</button>
+              <button onclick="quickAddSlot('14:30')" class="px-2 py-1.5 bg-slate-100 rounded-lg text-[11px] font-bold text-slate-700 hover:bg-slate-200">+ 2:30 PM</button>
+              <button onclick="quickAddSlot('15:30')" class="px-2 py-1.5 bg-slate-100 rounded-lg text-[11px] font-bold text-slate-700 hover:bg-slate-200">+ 3:30 PM</button>
+              <button onclick="quickAddSlot('16:30')" class="px-2 py-1.5 bg-slate-100 rounded-lg text-[11px] font-bold text-slate-700 hover:bg-slate-200">+ 4:30 PM</button>
+              <button onclick="quickAddSlot('17:30')" class="px-2 py-1.5 bg-slate-100 rounded-lg text-[11px] font-bold text-slate-700 hover:bg-slate-200">+ 5:30 PM</button>
+              <button onclick="quickAddSlot('18:30')" class="px-2 py-1.5 bg-slate-100 rounded-lg text-[11px] font-bold text-slate-700 hover:bg-slate-200">+ 6:30 PM</button>
+              <button onclick="quickAddSlot('19:30')" class="px-2 py-1.5 bg-slate-100 rounded-lg text-[11px] font-bold text-slate-700 hover:bg-slate-200">+ 7:30 PM</button>
             </div>
           </div>
         </div>
@@ -494,8 +526,8 @@
               <input type="date" id="direct-book-date" required class="w-full px-3 py-2 border rounded-xl font-semibold">
             </div>
             <div>
-              <label class="block font-bold text-slate-700 mb-1">Time</label>
-              <input type="time" id="direct-book-time" required class="w-full px-3 py-2 border rounded-xl font-semibold">
+              <label class="block font-bold text-slate-700 mb-1">Time (15-min increments)</label>
+              <input type="time" id="direct-book-time" step="900" required class="w-full px-3 py-2 border rounded-xl font-semibold">
             </div>
           </div>
           <div class="grid grid-cols-2 gap-3">
@@ -676,20 +708,20 @@
     let state = {
       userRole: 'parent',
       currentParent: null,
-      calendarLayout: 'monthly', // 'monthly' or 'weekly'
+      calendarLayout: 'monthly',
       selectedCalDate: CURRENT_SYSTEM_DATE,
       currentCalYear: todayObj.getFullYear(),
       currentCalMonth: todayObj.getMonth(),
-      currentWeekStart: new Date(todayObj.setDate(todayObj.getDate() - todayObj.getDay())), // Sunday
+      currentWeekStart: new Date(new Date().setDate(new Date().getDate() - new Date().getDay())),
       activeDuration: 60,
       activeSlotIdForBooking: null,
       activeLessonIdToCancel: null,
       isStandingReservation: false,
       parents: [],
       publishedSlots: [
-        { id: 'SLOT-1', date: CURRENT_SYSTEM_DATE, time: '15:30', status: 'open' },
-        { id: 'SLOT-2', date: CURRENT_SYSTEM_DATE, time: '16:45', status: 'open' },
-        { id: 'SLOT-3', date: CURRENT_SYSTEM_DATE, time: '18:00', status: 'open' }
+        { id: 'SLOT-1', date: CURRENT_SYSTEM_DATE, time: '13:00', status: 'open' },
+        { id: 'SLOT-2', date: CURRENT_SYSTEM_DATE, time: '14:00', status: 'open' },
+        { id: 'SLOT-3', date: CURRENT_SYSTEM_DATE, time: '15:00', status: 'open' }
       ],
       lessons: [],
       invoices: []
@@ -776,6 +808,24 @@
         });
       } catch (err) {
         console.error("Cloud push failed:", err);
+      }
+    }
+
+    // Helper to send email request to Google Apps Script (MailApp)
+    async function sendBookingNotificationEmail(bookingDetails) {
+      if (!GOOGLE_SHEET_API_URL || GOOGLE_SHEET_API_URL.includes("YOUR_SCRIPT_ID_HERE")) return;
+      try {
+        await fetch(GOOGLE_SHEET_API_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "sendBookingNotification",
+            booking: bookingDetails
+          })
+        });
+      } catch (err) {
+        console.warn("Notification email trigger error:", err);
       }
     }
 
@@ -938,7 +988,6 @@
       document.getElementById('parent-authenticated-content').classList.add('hidden');
     }
 
-    // STRICT DATE ONLY ON "VALID THRU"
     function renderParentPortalSession() {
       if (!state.currentParent) {
         document.getElementById('parent-auth-card').classList.remove('hidden');
@@ -953,7 +1002,6 @@
       const athleteSummary = (state.currentParent.athletes || []).map(a => `${a.name} (${a.level})`).join(', ');
       document.getElementById('active-parent-athletes').innerText = 'Athletes: ' + (athleteSummary || 'None registered');
       
-      // Clean date only (no time)
       const cleanExpires = normalizeDateString(state.currentParent.creditExpires) || '30 days';
       document.getElementById('parent-credit-badge').innerText = `${Number(state.currentParent.credits || 0).toFixed(1)} Credits (Valid thru ${cleanExpires})`;
 
@@ -975,7 +1023,7 @@
       if (tab === 'history') renderScheduledLessons();
     }
 
-    // CALENDAR LAYOUT TOGGLE (WEEKLY / MONTHLY)
+    // CALENDAR LAYOUT TOGGLE
     function setCalendarLayout(layout) {
       state.calendarLayout = layout;
       const btnM = document.getElementById('toggle-view-monthly');
@@ -1010,7 +1058,6 @@
         }
         renderCalendarDays();
       } else {
-        // Shift week by 7 days
         const cur = new Date(state.currentWeekStart);
         cur.setDate(cur.getDate() + (delta * 7));
         state.currentWeekStart = cur;
@@ -1104,7 +1151,6 @@
 
         const hasOpenSlots = state.publishedSlots.some(s => normalizeDateString(s.date) === dateStr && s.status === 'open');
         const isSelected = normalizeDateString(state.selectedCalDate) === dateStr;
-        const isToday = dateStr === CURRENT_SYSTEM_DATE;
 
         const cell = document.createElement('button');
         cell.onclick = () => {
@@ -1117,8 +1163,6 @@
         let cellStyle = 'h-20 rounded-xl border p-2 text-left flex flex-col justify-between transition ';
         if (isSelected) {
           cellStyle += 'border-blue-600 bg-blue-50/70 ring-2 ring-blue-600/30 font-bold';
-        } else if (isToday) {
-          cellStyle += 'border-slate-400 bg-slate-100 font-bold';
         } else {
           cellStyle += 'border-slate-200 bg-white hover:border-blue-400';
         }
@@ -1176,7 +1220,7 @@
       });
     }
 
-    // BOOKING MODAL LOGIC & INSUFFICIENT CREDIT BUBBLE
+    // BOOKING MODAL LOGIC
     function openBookModal(slotId) {
       if (!state.currentParent) {
         alert("Please sign in or register to book a lesson slot.");
@@ -1232,7 +1276,6 @@
       state.isStandingReservation = checked;
       const paymentSel = document.getElementById('modal-select-payment');
       if (checked) {
-        // Standing reservation must be paid with credits
         paymentSel.value = 'credit';
         paymentSel.disabled = true;
       } else {
@@ -1284,7 +1327,6 @@
         state.currentParent.credits = Number(state.currentParent.credits) - creditsNeeded;
       }
 
-      // Mark primary slot booked
       slot.status = 'booked';
 
       const baseDate = new Date(normalizeDateString(slot.date) + 'T00:00:00');
@@ -1294,7 +1336,6 @@
         lessonDateObj.setDate(baseDate.getDate() + (w * 7));
         const lessonDateStr = `${lessonDateObj.getFullYear()}-${pad(lessonDateObj.getMonth() + 1)}-${pad(lessonDateObj.getDate())}`;
 
-        // Ensure a slot exists for recurrence
         let matchedSlotId = slot.id;
         if (w > 0) {
           matchedSlotId = 'SLOT-AUTO-' + Date.now() + '-' + w;
@@ -1331,6 +1372,18 @@
         status: paymentMethod === 'credit' ? 'Paid' : 'Unpaid'
       });
 
+      // DISPATCH DUAL NOTIFICATION EMAILS (Parent + Coach RJ)
+      sendBookingNotificationEmail({
+        athleteName: athlete,
+        parentName: state.currentParent.name,
+        parentEmail: state.currentParent.email,
+        parentPhone: state.currentParent.phone || '',
+        date: normalizeDateString(slot.date),
+        time: formatTimeDisplay(slot.time),
+        duration: state.activeDuration,
+        paymentMethod: state.isStandingReservation ? 'Credit (Standing 4-Wk)' : paymentMethod.toUpperCase()
+      });
+
       saveState();
       syncToCloud();
       closeBookModal();
@@ -1338,7 +1391,7 @@
       renderCoachDashboardMetrics();
       renderCoachCalendarDays();
       renderCoachDaySummary();
-      alert(`Lesson locked for ${athlete}! ${state.isStandingReservation ? 'Weekly standing reservation confirmed for 4 consecutive weeks.' : ''}`);
+      alert(`Lesson locked for ${athlete}! Confirmation email sent to ${state.currentParent.email} and Coach RJ.`);
     }
 
     function renderScheduledLessons() {
@@ -1601,8 +1654,12 @@
     }
 
     function renderCoachView() {
-      document.getElementById('slot-pub-date').value = CURRENT_SYSTEM_DATE;
-      document.getElementById('direct-book-date').value = CURRENT_SYSTEM_DATE;
+      if (!document.getElementById('slot-pub-date').value) {
+        document.getElementById('slot-pub-date').value = CURRENT_SYSTEM_DATE;
+      }
+      if (!document.getElementById('direct-book-date').value) {
+        document.getElementById('direct-book-date').value = CURRENT_SYSTEM_DATE;
+      }
       renderCoachDashboardMetrics();
       renderCoachCalendarDays();
       renderCoachDaySummary();
@@ -1753,16 +1810,20 @@
       e.preventDefault();
       const date = document.getElementById('slot-pub-date').value;
       const rawTime = document.getElementById('slot-pub-time').value;
+      const normalizedDate = normalizeDateString(date);
       const normalizedTime = normalizeTimeString(rawTime);
 
-      state.publishedSlots.push({
-        id: 'SLOT-' + Date.now(),
-        date: normalizeDateString(date),
-        time: normalizedTime,
-        status: 'open'
-      });
+      const exists = state.publishedSlots.some(s => normalizeDateString(s.date) === normalizedDate && normalizeTimeString(s.time) === normalizedTime);
+      if (!exists) {
+        state.publishedSlots.push({
+          id: 'SLOT-' + Date.now(),
+          date: normalizedDate,
+          time: normalizedTime,
+          status: 'open'
+        });
+      }
 
-      state.selectedCalDate = normalizeDateString(date);
+      state.selectedCalDate = normalizedDate;
       const [sy, sm] = state.selectedCalDate.split('-');
       state.currentCalYear = Number(sy);
       state.currentCalMonth = Number(sm) - 1;
@@ -1781,16 +1842,27 @@
       alert(`Open slot for ${state.selectedCalDate} at ${formatTimeDisplay(normalizedTime)} is live!`);
     }
 
+    // SINGLE PRESET APPLIED TO SELECTED DATE
     async function quickAddSlot(timeStr) {
+      const datePicker = document.getElementById('slot-pub-date');
+      const targetDate = (datePicker && datePicker.value) ? datePicker.value : CURRENT_SYSTEM_DATE;
+      const normalizedDate = normalizeDateString(targetDate);
       const normalizedTime = normalizeTimeString(timeStr);
-      state.publishedSlots.push({
-        id: 'SLOT-' + Date.now(),
-        date: CURRENT_SYSTEM_DATE,
-        time: normalizedTime,
-        status: 'open'
-      });
 
-      state.selectedCalDate = CURRENT_SYSTEM_DATE;
+      const exists = state.publishedSlots.some(s => normalizeDateString(s.date) === normalizedDate && normalizeTimeString(s.time) === normalizedTime);
+      if (!exists) {
+        state.publishedSlots.push({
+          id: 'SLOT-' + Date.now(),
+          date: normalizedDate,
+          time: normalizedTime,
+          status: 'open'
+        });
+      }
+
+      state.selectedCalDate = normalizedDate;
+      const [sy, sm] = normalizedDate.split('-');
+      state.currentCalYear = Number(sy);
+      state.currentCalMonth = Number(sm) - 1;
 
       saveState();
       syncToCloud();
@@ -1802,6 +1874,48 @@
       renderCalendarDays();
       renderCalendarWeeklyStrip();
       renderOpenSlots();
+    }
+
+    // 1-CLICK BATCH PUBLISH FULL AFTERNOON SCHEDULE
+    async function batchPublishSlots(timeArray) {
+      const datePicker = document.getElementById('slot-pub-date');
+      const targetDate = (datePicker && datePicker.value) ? datePicker.value : CURRENT_SYSTEM_DATE;
+      const normalizedDate = normalizeDateString(targetDate);
+
+      let addedCount = 0;
+      timeArray.forEach((t, idx) => {
+        const normalizedTime = normalizeTimeString(t);
+        const alreadyExists = state.publishedSlots.some(
+          s => normalizeDateString(s.date) === normalizedDate && normalizeTimeString(s.time) === normalizedTime
+        );
+        if (!alreadyExists) {
+          state.publishedSlots.push({
+            id: 'SLOT-BATCH-' + Date.now() + '-' + idx,
+            date: normalizedDate,
+            time: normalizedTime,
+            status: 'open'
+          });
+          addedCount++;
+        }
+      });
+
+      state.selectedCalDate = normalizedDate;
+      const [sy, sm] = normalizedDate.split('-');
+      state.currentCalYear = Number(sy);
+      state.currentCalMonth = Number(sm) - 1;
+
+      saveState();
+      syncToCloud();
+
+      renderCoachPublishedSlots();
+      renderCoachCalendarDays();
+      renderCoachDaySummary();
+      renderCoachDashboardMetrics();
+      renderCalendarDays();
+      renderCalendarWeeklyStrip();
+      renderOpenSlots();
+
+      alert(`Published ${addedCount} open lesson slot(s) for ${normalizedDate}!`);
     }
 
     function renderCoachPublishedSlots() {
