@@ -188,6 +188,7 @@
             </div>
             
             <div class="flex items-center space-x-3">
+              <!-- WEEKLY / MONTHLY TOGGLE -->
               <div class="flex bg-slate-100 p-1 rounded-xl text-xs font-bold">
                 <button id="toggle-view-monthly" onclick="setCalendarLayout('monthly')" class="px-3 py-1 rounded-lg bg-white text-slate-900 shadow-sm">Month</button>
                 <button id="toggle-view-weekly" onclick="setCalendarLayout('weekly')" class="px-3 py-1 rounded-lg text-slate-600 hover:text-slate-900">Week</button>
@@ -270,9 +271,9 @@
               </div>
               <div class="rounded-2xl border border-slate-200 p-5 space-y-3 hover:border-blue-500 transition">
                 <span class="text-xs font-extrabold uppercase text-slate-400">Elite 8-Pack</span>
-                <div class="text-2xl font-black text-slate-900">$720 <span class="text-xs font-normal text-slate-500">/ 8 Credits</span></div>
-                <p class="text-xs text-slate-600">Comprehensive development block. Saves $80 with full mechanics focus.</p>
-                <button onclick="promptPackagePurchase(8, 720)" class="w-full py-2 bg-slate-900 text-white rounded-xl text-xs font-bold hover:bg-slate-800">
+                <div class="text-2xl font-black text-slate-900">$760 <span class="text-xs font-normal text-slate-500">/ 8 Credits</span></div>
+                <p class="text-xs text-slate-600">Comprehensive development block. Saves $40 with full mechanics focus.</p>
+                <button onclick="promptPackagePurchase(8, 760)" class="w-full py-2 bg-slate-900 text-white rounded-xl text-xs font-bold hover:bg-slate-800">
                   Buy 8-Session Pack
                 </button>
               </div>
@@ -591,8 +592,8 @@
           <button onclick="promptPackagePurchase(4, 380)" class="py-1.5 bg-blue-600 text-white rounded-lg text-[10px] font-extrabold hover:bg-blue-700 shadow-sm">
             4 Pack ($380)
           </button>
-          <button onclick="promptPackagePurchase(8, 720)" class="py-1.5 bg-slate-900 text-white rounded-lg text-[10px] font-extrabold hover:bg-black">
-            8 Pack ($720)
+          <button onclick="promptPackagePurchase(8, 760)" class="py-1.5 bg-slate-900 text-white rounded-lg text-[10px] font-extrabold hover:bg-black">
+            8 Pack ($760)
           </button>
         </div>
       </div>
@@ -708,7 +709,6 @@
       return str.slice(0, 5);
     }
 
-    // Prevents crashes if athletes came back from cloud as text or object
     function normalizeAthletes(athletes) {
       if (Array.isArray(athletes)) return athletes;
       if (typeof athletes === 'string') {
@@ -957,7 +957,6 @@
       const email = document.getElementById('login-parent-email').value.trim().toLowerCase();
       const pin = document.getElementById('login-parent-pin').value.trim();
       
-      // Robust comparison supporting numeric or string PINs
       const found = state.parents.find(p => 
         p && 
         String(p.email || '').trim().toLowerCase() === email && 
@@ -2143,7 +2142,7 @@
       renderCoachDashboardMetrics();
     }
 
-    // PACKAGE PURCHASE WITH MANDATORY POLICY CONSENT
+    // PACKAGE PURCHASE WITH MANDATORY POLICY CONSENT ($760 FOR 8 PACK)
     async function promptPackagePurchase(credits, price) {
       if (!state.currentParent) {
         alert("Please log in or register before buying a package.");
