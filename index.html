@@ -4,6 +4,27 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LessonFlow Pro - RJ Baseball Performance</title>
+
+  <!-- PWA & MOBILE APP META TAGS -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0052cc">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="RJ Baseball">
+  <link rel="apple-touch-icon" href="icon-192.png">
+
+  <!-- SERVICE WORKER REGISTRATION -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then(reg => console.log('ServiceWorker registered:', reg.scope))
+          .catch(err => console.warn('ServiceWorker registration failed:', err));
+      });
+    }
+  </script>
+
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -790,7 +811,7 @@
     const COACH_SECURITY_PIN = "Ballislife123!";
 
     // GOOGLE APPS SCRIPT WEB APP URL
-    const GOOGLE_SHEET_API_URL = "https://script.google.com/macros/s/AKfycbx5kOrTUKB0Yimaa1aMJgXDktaOMwk2G6gHCdJ8Yjh5i7tX0H4KJLmLGDozBpN5x9Ty/exec";
+    const GOOGLE_SHEET_API_URL = "https://script.google.com/macros/s/AKfycbxiadyhn8h2FHxoH9chKsoHXAYUgyJu4H67UGEH8Z39bCh4MWjFaHouJRgFIrxxMQqklg/exec";
 
     function normalizeDateString(dateVal) {
       if (!dateVal) return '';
@@ -1653,7 +1674,6 @@
           status: paymentMethod === 'credit' ? 'Paid' : 'Unpaid'
         });
 
-        // Dual Email Notification to Parent & Coach RJ
         sendBookingNotificationEmail({
           athleteName: athlete,
           parentName: state.currentParent.name,
@@ -1738,7 +1758,6 @@
         status: paymentMethod === 'credit' ? 'Paid' : 'Unpaid'
       });
 
-      // Dual Email Notification to Parent & Coach RJ
       sendBookingNotificationEmail({
         athleteName: athlete,
         parentName: state.currentParent.name,
@@ -2064,7 +2083,6 @@
       const textInput = document.getElementById('plan-text-content');
       const monthInput = document.getElementById('plan-target-month');
 
-      // If Coach is actively typing in either field, do not refresh or overwrite the form
       if (document.activeElement === textInput || document.activeElement === monthInput) {
         return;
       }
