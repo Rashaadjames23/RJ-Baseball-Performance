@@ -167,7 +167,6 @@
           </div>
         </div>
 
-        <!-- PORTAL TABS -->
         <div class="flex space-x-2 border-b border-slate-200 pb-2">
           <button id="parent-tab-schedule" onclick="switchParentSubTab('schedule')" class="px-4 py-2 font-bold text-sm text-blue-600 border-b-2 border-blue-600">
             Book Lesson Slots & Classes
@@ -180,7 +179,7 @@
           </button>
         </div>
 
-        <!-- 1A: SCHEDULE LESSON & FIELDING CLASSES VIEW -->
+        <!-- 1A: SCHEDULE LESSON VIEW -->
         <div id="parent-content-schedule" class="space-y-6">
           <div class="flex flex-wrap items-center justify-between gap-4 bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
             <div class="flex items-center space-x-3">
@@ -198,7 +197,6 @@
             </div>
             
             <div class="flex items-center space-x-3">
-              <!-- WEEKLY / MONTHLY TOGGLE -->
               <div class="flex bg-slate-100 p-1 rounded-xl text-xs font-bold">
                 <button id="toggle-view-monthly" onclick="setCalendarLayout('monthly')" class="px-3 py-1 rounded-lg bg-white text-slate-900 shadow-sm">Month</button>
                 <button id="toggle-view-weekly" onclick="setCalendarLayout('weekly')" class="px-3 py-1 rounded-lg text-slate-600 hover:text-slate-900">Week</button>
@@ -212,7 +210,6 @@
             </div>
           </div>
 
-          <!-- Monthly Grid View -->
           <div id="parent-calendar-monthly-view" class="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm">
             <div class="grid grid-cols-7 gap-2 text-center text-xs font-extrabold text-slate-400 uppercase tracking-wider mb-2">
               <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
@@ -220,7 +217,6 @@
             <div id="calendar-days-grid" class="grid grid-cols-7 gap-2"></div>
           </div>
 
-          <!-- Weekly Strip View -->
           <div id="parent-calendar-weekly-view" class="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm hidden">
             <div class="grid grid-cols-7 gap-2 text-center text-xs font-extrabold text-slate-400 uppercase tracking-wider mb-2">
               <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
@@ -228,7 +224,6 @@
             <div id="calendar-weekly-strip" class="grid grid-cols-7 gap-2"></div>
           </div>
 
-          <!-- Open Slots & Fielding Classes Stream -->
           <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4">
             <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
               <div>
@@ -321,8 +316,25 @@
         </div>
       </div>
 
+      <!-- MONTHLY DEVELOPMENT & DRILL PLAN CONTAINER -->
+      <div class="bg-white rounded-2xl border border-blue-200 p-6 shadow-sm space-y-4">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+          <div class="flex items-center space-x-2">
+            <span class="text-lg">📋</span>
+            <h4 class="text-base font-black text-slate-900">Monthly Development & Drill Plan</h4>
+          </div>
+          <span id="athlete-plan-month-badge" class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase bg-blue-50 text-blue-700 border border-blue-200">
+            Active Plan
+          </span>
+        </div>
+        <div id="athlete-monthly-plan-content" class="text-xs text-slate-700 leading-relaxed bg-slate-50 border border-slate-200 p-4 rounded-xl whitespace-pre-line">
+          No training plan assigned for this month yet. Check back once Coach RJ publishes your workout focus.
+        </div>
+      </div>
+
+      <!-- SESSIONS FEED WITH COACH EVALUATION NOTES -->
       <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4">
-        <h4 class="text-base font-black text-slate-900">My Upcoming Training Sessions</h4>
+        <h4 class="text-base font-black text-slate-900">My Upcoming & Completed Training Sessions</h4>
         <div id="athlete-lessons-feed" class="space-y-3"></div>
       </div>
     </div>
@@ -371,7 +383,7 @@
       <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm flex flex-wrap items-center justify-between gap-4">
         <div>
           <h2 class="text-xl font-black text-slate-900">Coach RJ Command Center</h2>
-          <p class="text-xs text-slate-500">Manage lesson slots, fielding classes, athlete rosters, and payments.</p>
+          <p class="text-xs text-slate-500">Manage lesson slots, fielding classes, drill plans, and payments.</p>
         </div>
         <div class="flex items-center space-x-1 bg-slate-100 p-1 rounded-xl text-xs font-bold">
           <button id="coach-tab-calendar" onclick="switchCoachSubTab('calendar')" class="px-3 py-1.5 rounded-lg bg-white text-slate-900 shadow-sm">
@@ -379,6 +391,9 @@
           </button>
           <button id="coach-tab-roster" onclick="switchCoachSubTab('roster')" class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900">
             Athletes & Directory
+          </button>
+          <button id="coach-tab-plans" onclick="switchCoachSubTab('plans')" class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900">
+            Monthly Drill Plans
           </button>
           <button id="coach-tab-slots" onclick="switchCoachSubTab('slots')" class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900">
             Publish Slots
@@ -432,7 +447,32 @@
         </div>
       </div>
 
-      <!-- COACH TAB: ATHLETES & PARENT DIRECTORY (WITH DELETE FUNCTION) -->
+      <!-- COACH TAB: MONTHLY DRILL & WORKOUT PLANS -->
+      <div id="coach-content-plans" class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-6 hidden">
+        <div class="border-b border-slate-100 pb-3">
+          <h4 class="text-base font-black text-slate-900">Monthly Development & Drill Plan Builder</h4>
+          <p class="text-xs text-slate-500">Assign workout homework, mechanical cues, and drill focus directly to an athlete's portal.</p>
+        </div>
+        <form onsubmit="handleSaveAthleteMonthlyPlan(event)" class="space-y-4 max-w-2xl">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Select Athlete</label>
+            <select id="plan-select-athlete" onchange="loadSelectedAthletePlan()" class="w-full px-3 py-2 text-xs border rounded-xl font-semibold bg-white"></select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Target Month</label>
+            <input type="text" id="plan-target-month" placeholder="e.g. November 2026 Development Plan" required class="w-full px-3 py-2 text-xs border rounded-xl font-semibold">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Workout & Drill Instructions</label>
+            <textarea id="plan-text-content" rows="6" placeholder="• Hitting: 50 tee reps focusing on keeping the barrel through the zone.&#10;• Fielding: Short-hop wall drill (3x20 reps).&#10;• Conditioning: Core stability and rotational med-ball throws." required class="w-full px-3 py-2 text-xs border rounded-xl font-medium"></textarea>
+          </div>
+          <button type="submit" class="py-2.5 px-6 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow">
+            Save & Publish to Athlete Portal
+          </button>
+        </form>
+      </div>
+
+      <!-- COACH TAB: ATHLETES & PARENT DIRECTORY -->
       <div id="coach-content-roster" class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-6 hidden">
         <div class="flex items-center justify-between border-b border-slate-100 pb-4">
           <div>
@@ -592,7 +632,7 @@
         </form>
       </div>
 
-      <!-- COACH TAB 3: PAYMENT TRACKER WITH DELETE / WAIVE BUTTON -->
+      <!-- COACH TAB 3: PAYMENT TRACKER -->
       <div id="coach-content-billing" class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4 hidden">
         <div class="flex items-center justify-between border-b border-slate-100 pb-3">
           <div>
@@ -605,6 +645,30 @@
     </div>
 
   </main>
+
+  <!-- MODAL: COACH SESSION NOTES EDITOR -->
+  <div id="modal-session-notes" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-start justify-center pt-16 sm:pt-20 px-4 hidden">
+    <div class="bg-white rounded-2xl border border-slate-200 max-w-md w-full p-6 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <h4 class="font-black text-slate-900 text-base">Athlete Session Notes</h4>
+        <button onclick="closeSessionNotesModal()" class="text-slate-400 hover:text-slate-700 font-bold text-lg">✕</button>
+      </div>
+      <div class="space-y-3 text-xs">
+        <div class="p-3 bg-slate-50 border rounded-xl">
+          <p class="font-black text-slate-900" id="notes-modal-athlete-session">Athlete Session</p>
+          <p class="text-slate-500 text-[11px]" id="notes-modal-datetime">Date & Time</p>
+        </div>
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Coaching Evaluation & Mechanical Feedback</label>
+          <textarea id="notes-modal-textarea" rows="4" placeholder="Enter hitting cues, bat path progress, fielding footwork drills, or areas to improve..." class="w-full p-2.5 border rounded-xl font-medium"></textarea>
+        </div>
+      </div>
+      <div class="pt-2 flex items-center space-x-2">
+        <button onclick="closeSessionNotesModal()" class="w-1/2 py-2.5 rounded-xl border border-slate-200 font-bold text-xs text-slate-600">Cancel</button>
+        <button onclick="saveSessionNotes()" class="w-1/2 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow">Save Notes</button>
+      </div>
+    </div>
+  </div>
 
   <!-- MODAL: BOOK LESSON CONFIRMATION & STANDING TIME OPTION -->
   <div id="modal-book-slot" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-start justify-center pt-16 sm:pt-20 px-4 hidden">
@@ -771,6 +835,7 @@
       activeDuration: 60,
       activeSlotIdForBooking: null,
       activeLessonIdToCancel: null,
+      activeLessonIdForNotes: null,
       isStandingReservation: false,
       isBookingFieldingClass: false,
       parents: [],
@@ -780,7 +845,8 @@
         { id: 'CLASS-1', date: CURRENT_SYSTEM_DATE, time: '16:00', status: 'open', type: 'class', title: 'Fielding: Backhands & Footwork', maxCapacity: 4, bookedCount: 0, attendees: [] }
       ],
       lessons: [],
-      invoices: []
+      invoices: [],
+      athletePlans: {} // athleteName -> { month: 'November 2026', planText: '...' }
     };
 
     // --- TWO-WAY GOOGLE SHEETS CLOUD SYNC ENGINE ---
@@ -808,7 +874,8 @@
             state.lessons = result.data.lessons.map(l => ({
               ...l,
               date: normalizeDateString(l.date),
-              time: normalizeTimeString(l.time)
+              time: normalizeTimeString(l.time),
+              notes: l.notes || ''
             }));
           }
           if (Array.isArray(result.data.parents) && result.data.parents.length > 0) {
@@ -843,6 +910,7 @@
             renderCoachPublishedClasses();
             renderInvoices();
             populateCoachStudentSelect();
+            populatePlanAthleteSelect();
           }
 
           const statusBadge = document.getElementById('cloud-status-text');
@@ -916,10 +984,12 @@
             state.lessons = parsed.lessons.map(l => ({
               ...l,
               date: normalizeDateString(l.date),
-              time: normalizeTimeString(l.time)
+              time: normalizeTimeString(l.time),
+              notes: l.notes || ''
             }));
           }
           state.invoices = parsed.invoices || [];
+          state.athletePlans = parsed.athletePlans || {};
           if (parsed.currentParent) {
             const found = state.parents.find(p => String(p.email || '').trim().toLowerCase() === String(parsed.currentParent.email || '').trim().toLowerCase());
             state.currentParent = found || parsed.currentParent;
@@ -939,6 +1009,7 @@
         publishedSlots: state.publishedSlots,
         lessons: state.lessons,
         invoices: state.invoices,
+        athletePlans: state.athletePlans,
         currentParent: state.currentParent
       }));
     }
@@ -1170,7 +1241,7 @@
       renderCoachDaySummary();
     }
 
-    // MONTHLY GRID RENDER (WITH DUAL COLOR CODES)
+    // MONTHLY GRID RENDER
     function renderCalendarDays() {
       const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
       document.getElementById('calendar-header-title').innerText = `${monthNames[state.currentCalMonth]} ${state.currentCalYear}`;
@@ -1276,7 +1347,7 @@
       }
     }
 
-    // OPEN SLOTS & FIELDING CLASSES POPULATION (DUAL COLORS)
+    // OPEN SLOTS & FIELDING CLASSES POPULATION
     function renderOpenSlots() {
       const container = document.getElementById('parent-open-slots-stream');
       const heading = document.getElementById('selected-day-slots-heading');
@@ -1305,7 +1376,6 @@
         const card = document.createElement('div');
 
         if (isClass) {
-          // Fielding Class Card (Amber Color Scheme)
           const spotsLeft = 4 - (slot.bookedCount || 0);
           const isFull = spotsLeft <= 0;
 
@@ -1325,7 +1395,6 @@
             </button>
           `;
         } else if (slot.status === 'open') {
-          // Private Lesson Card (Standard Blue Scheme)
           card.className = 'border border-slate-200 bg-white hover:border-blue-500 rounded-xl p-4 flex items-center justify-between shadow-sm transition';
           card.innerHTML = `
             <div>
@@ -1337,14 +1406,14 @@
             </button>
           `;
         } else {
-          return; // Skip booked private slots
+          return;
         }
 
         container.appendChild(card);
       });
     }
 
-    // BOOKING MODAL LOGIC (SUPPORTS LESSONS AND 4-PLAYER CLASSES)
+    // BOOKING MODAL LOGIC
     function openBookModal(slotId) {
       if (!state.currentParent) {
         alert("Please sign in or register to book.");
@@ -1505,8 +1574,9 @@
 
       const athlete = document.getElementById('modal-select-athlete').value;
       const paymentMethod = document.getElementById('modal-select-payment').value;
+      const dateFormatted = normalizeDateString(slot.date);
 
-      // Class Booking vs Private Lesson Booking
+      // --- 1. FIELDING CLASS BOOKING LOGIC ---
       if (slot.type === 'class') {
         const currentCount = slot.bookedCount || 0;
         if (currentCount >= 4) {
@@ -1514,27 +1584,32 @@
           return;
         }
 
-        // Mandatory Reserve Payment Notification Prompt
-        const proceedWithClass = confirm(
-          `NOTICE: FIELDING CLASS RESERVATION POLICY\n\n` +
-          `• Class Rate: $50 / Athlete (or 0.5 Credit)\n` +
-          `• You must send payment to reserve your spot!\n\n` +
-          `Payment options:\n` +
-          `• Venmo: @Richard-James-256\n` +
-          `• Zelle: 346-660-1074 (Richard James)\n` +
-          `• Credit Balance / Cash\n\n` +
-          `Click OK to confirm your registration and notify Coach RJ.`
-        );
-
-        if (!proceedWithClass) return;
-
+        // Conditional Prompt: If paying with credit, do NOT ask for Venmo/Zelle.
         if (paymentMethod === 'credit') {
           if (Number(state.currentParent.credits || 0) < 0.5) {
             document.getElementById('modal-insufficient-credit-bubble').classList.remove('hidden');
             alert('You need at least 0.5 credits for this fielding class. Please purchase credits or choose Venmo/Cash.');
             return;
           }
+
+          // Exact prompt for credit users
+          alert(`We look forward to seeing you at the class on ${dateFormatted}!`);
           state.currentParent.credits = Number(state.currentParent.credits) - 0.5;
+
+        } else {
+          // Non-credit payment prompt
+          const proceedWithClass = confirm(
+            `NOTICE: FIELDING CLASS RESERVATION\n\n` +
+            `• Class Rate: $50 / Athlete\n` +
+            `• You must send payment to reserve your spot!\n\n` +
+            `Payment options:\n` +
+            `• Venmo: @Richard-James-256\n` +
+            `• Zelle: 346-660-1074 (Richard James)\n` +
+            `• Cash at Session\n\n` +
+            `Click OK to confirm registration and notify Coach RJ.`
+          );
+
+          if (!proceedWithClass) return;
         }
 
         slot.bookedCount = currentCount + 1;
@@ -1546,7 +1621,7 @@
         state.lessons.push({
           id: 'CLASS-LES-' + Date.now(),
           slotId: slot.id,
-          date: normalizeDateString(slot.date),
+          date: dateFormatted,
           time: normalizeTimeString(slot.time),
           duration: 60,
           athleteName: athlete,
@@ -1556,12 +1631,13 @@
           paymentStatus: paymentMethod === 'credit' ? 'paid_credit' : 'unpaid_due',
           paymentMethod: paymentMethod,
           price: 50,
-          completed: false
+          completed: false,
+          notes: ''
         });
 
         state.invoices.unshift({
           id: 'INV-' + Date.now().toString().slice(-4),
-          date: normalizeDateString(slot.date),
+          date: dateFormatted,
           athleteName: athlete,
           parentEmail: state.currentParent.email,
           amount: 50,
@@ -1574,7 +1650,7 @@
           parentName: state.currentParent.name,
           parentEmail: state.currentParent.email,
           parentPhone: state.currentParent.phone || '',
-          date: normalizeDateString(slot.date),
+          date: dateFormatted,
           time: formatTimeDisplay(slot.time),
           duration: 60,
           paymentMethod: `Fielding Class: ${paymentMethod.toUpperCase()}`
@@ -1587,11 +1663,10 @@
         renderCoachDashboardMetrics();
         renderCoachCalendarDays();
         renderCoachDaySummary();
-        alert(`Spot registered for ${athlete} in Fielding Class! Please remember to send $50 via Venmo or Zelle to lock your spot.`);
         return;
       }
 
-      // --- Private 1-on-1 Lesson Booking ---
+      // --- 2. PRIVATE 1-ON-1 LESSON BOOKING ---
       const multiplier = state.isStandingReservation ? 4 : 1;
       const creditsNeeded = (state.activeDuration / 60) * multiplier;
       const totalCost = (state.activeDuration === 120 ? 200 : (state.activeDuration === 90 ? 150 : 100)) * multiplier;
@@ -1606,8 +1681,7 @@
       }
 
       slot.status = 'booked';
-
-      const baseDate = new Date(normalizeDateString(slot.date) + 'T00:00:00');
+      const baseDate = new Date(dateFormatted + 'T00:00:00');
 
       for (let w = 0; w < multiplier; w++) {
         const lessonDateObj = new Date(baseDate);
@@ -1638,13 +1712,14 @@
           paymentStatus: paymentMethod === 'credit' ? 'paid_credit' : 'unpaid_due',
           paymentMethod: paymentMethod,
           price: totalCost / multiplier,
-          completed: false
+          completed: false,
+          notes: ''
         });
       }
 
       state.invoices.unshift({
         id: 'INV-' + Date.now().toString().slice(-4),
-        date: normalizeDateString(slot.date),
+        date: dateFormatted,
         athleteName: athlete,
         parentEmail: state.currentParent.email,
         amount: totalCost,
@@ -1657,7 +1732,7 @@
         parentName: state.currentParent.name,
         parentEmail: state.currentParent.email,
         parentPhone: state.currentParent.phone || '',
-        date: normalizeDateString(slot.date),
+        date: dateFormatted,
         time: formatTimeDisplay(slot.time),
         duration: state.activeDuration,
         paymentMethod: state.isStandingReservation ? 'Credit (Standing 4-Wk)' : paymentMethod.toUpperCase()
@@ -1681,7 +1756,7 @@
       const parentLessons = state.lessons.filter(l => l.parentEmail && String(l.parentEmail).trim().toLowerCase() === String(state.currentParent.email).trim().toLowerCase());
 
       if (parentLessons.length === 0) {
-        container.innerHTML = `<div class="p-6 text-center text-slate-400 border border-dashed rounded-xl">No scheduled lessons right now.</div>`;
+        container.innerHTML = `<div class="p-6 text-center text-slate-400 border border-dashed rounded-xl">No scheduled sessions right now.</div>`;
         return;
       }
 
@@ -1700,6 +1775,7 @@
               </span>
             </div>
             <p class="text-xs text-slate-500 mt-1">Athlete: <b>${l.athleteName}</b> • ${isClass ? (l.title || 'Fielding Class') : 'RJ Baseball Private Lesson'}</p>
+            ${l.notes ? `<div class="mt-2 p-2 bg-white rounded-lg border border-slate-200 text-[11px] text-slate-700 font-medium"><b>Coach Notes:</b> ${l.notes}</div>` : ''}
           </div>
           <div class="flex items-center space-x-2">
             <a href="${gCalUrl}" target="_blank" class="px-3 py-1.5 rounded-lg border border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100 text-xs font-bold">
@@ -1714,7 +1790,7 @@
       });
     }
 
-    // CANCELLATION & REPOPULATION
+    // CANCELLATION
     function promptCancelLesson(lessonId) {
       state.activeLessonIdToCancel = lessonId;
       const lesson = state.lessons.find(l => l.id === lessonId);
@@ -1765,7 +1841,6 @@
         }
       }
 
-      // Slot handling
       const slot = state.publishedSlots.find(s => s.id === lesson.slotId);
       if (slot) {
         if (slot.type === 'class') {
@@ -1791,7 +1866,7 @@
       alert('Cancellation complete. The spot has been reopened.');
     }
 
-    // ATHLETE VIEW LOGIC
+    // ATHLETE VIEW LOGIC (WITH MONTHLY DRILL PLAN & COACH SESSION NOTES)
     function renderAthleteView() {
       if (!state.currentParent || !state.currentParent.athletes || state.currentParent.athletes.length === 0) {
         document.getElementById('athlete-display-name').innerText = 'No Athlete Selected';
@@ -1807,6 +1882,19 @@
       document.getElementById('athlete-display-level').innerText = (ath.level || 'Athlete') + ' • RJ Baseball Performance';
       document.getElementById('athlete-credits-count').innerText = Number(state.currentParent.credits || 0).toFixed(1);
 
+      // Render athlete-specific monthly workout / drill plan
+      const planBadge = document.getElementById('athlete-plan-month-badge');
+      const planContent = document.getElementById('athlete-monthly-plan-content');
+      const existingPlan = state.athletePlans[ath.name];
+
+      if (existingPlan && existingPlan.planText) {
+        planBadge.innerText = existingPlan.month || 'Active Plan';
+        planContent.innerText = existingPlan.planText;
+      } else {
+        planBadge.innerText = 'No Current Plan';
+        planContent.innerText = 'No custom drill or workout plan assigned for this month yet. Check back once Coach RJ updates your training goals.';
+      }
+
       const completedSessions = state.lessons.filter(l => 
         l.parentEmail && 
         String(l.parentEmail).trim().toLowerCase() === String(state.currentParent.email).trim().toLowerCase() && 
@@ -1817,23 +1905,33 @@
 
       const feed = document.getElementById('athlete-lessons-feed');
       feed.innerHTML = '';
-      const upcoming = state.lessons.filter(l => l.parentEmail && String(l.parentEmail).trim().toLowerCase() === String(state.currentParent.email).trim().toLowerCase());
+      const athleteSessions = state.lessons.filter(l => l.parentEmail && String(l.parentEmail).trim().toLowerCase() === String(state.currentParent.email).trim().toLowerCase() && l.athleteName === ath.name);
 
-      if (upcoming.length === 0) {
-        feed.innerHTML = `<div class="p-6 text-center text-slate-400 border border-dashed rounded-xl">No upcoming sessions. Book a slot from the Parent Booking tab.</div>`;
+      if (athleteSessions.length === 0) {
+        feed.innerHTML = `<div class="p-6 text-center text-slate-400 border border-dashed rounded-xl">No upcoming or completed sessions. Book a slot from the Parent Booking tab.</div>`;
         return;
       }
 
-      upcoming.forEach(l => {
+      athleteSessions.forEach(l => {
         const isClass = (l.type === 'class');
         const card = document.createElement('div');
-        card.className = 'p-4 rounded-xl border border-slate-200 bg-slate-50 flex items-center justify-between';
+        card.className = `p-4 rounded-xl border ${l.completed ? 'border-slate-200 bg-slate-50' : 'border-blue-200 bg-blue-50/30'} flex flex-col space-y-2`;
         card.innerHTML = `
-          <div>
+          <div class="flex items-center justify-between">
             <span class="font-extrabold text-sm text-slate-900">${normalizeDateString(l.date)} @ ${formatTimeDisplay(l.time)}</span>
-            <p class="text-xs text-slate-500">${isClass ? 'Fielding Class' : l.duration + ' Min Private Lesson'} • Athlete: ${l.athleteName}</p>
+            <span class="text-xs ${l.completed ? 'bg-emerald-100 text-emerald-800' : 'bg-blue-100 text-blue-800'} font-extrabold px-2.5 py-0.5 rounded-full">
+              ${l.completed ? '✓ Completed' : 'Confirmed'}
+            </span>
           </div>
-          <span class="text-xs bg-blue-100 text-blue-800 font-extrabold px-3 py-1 rounded-full">Confirmed</span>
+          <p class="text-xs text-slate-500">${isClass ? 'Fielding Class' : l.duration + ' Min Private Lesson'} • Coach RJ</p>
+          ${l.notes ? `
+            <div class="mt-2 p-3 bg-white rounded-xl border border-blue-200 text-xs text-slate-700 space-y-1 shadow-sm">
+              <span class="font-bold text-blue-900 block text-[11px] uppercase tracking-wider">Coach Evaluation & Session Notes:</span>
+              <p class="whitespace-pre-line leading-relaxed">${l.notes}</p>
+            </div>
+          ` : `
+            <p class="text-[11px] text-slate-400 italic">No coach notes added for this session yet.</p>
+          `}
         `;
         feed.appendChild(card);
       });
@@ -1863,7 +1961,6 @@
       document.getElementById('metric-scheduled-lessons').innerText = state.lessons.length;
     }
 
-    // ATHLETE & PARENT DIRECTORY (WITH DELETE ATHLETE BUTTON)
     function renderCoachRoster() {
       const container = document.getElementById('coach-roster-directory-table');
       if (!container) return;
@@ -1928,16 +2025,14 @@
       container.innerHTML = html;
     }
 
-    // REMOVE ATHLETE HANDLER
     async function removeAthleteFromRoster(parentEmail, athleteId, athleteName) {
-      const confirmed = confirm(`Are you sure you want to remove ${athleteName} from the directory? This will remove the athlete from this parent's account.`);
+      const confirmed = confirm(`Are you sure you want to remove ${athleteName} from the directory?`);
       if (!confirmed) return;
 
       const parent = state.parents.find(p => String(p.email || '').trim().toLowerCase() === String(parentEmail).trim().toLowerCase());
       if (parent && Array.isArray(parent.athletes)) {
         parent.athletes = parent.athletes.filter(a => a.id !== athleteId && a.name !== athleteName);
         
-        // Update active session if currently signed in as this parent
         if (state.currentParent && state.currentParent.email === parent.email) {
           state.currentParent.athletes = parent.athletes;
           renderParentPortalSession();
@@ -1947,12 +2042,103 @@
         syncToCloud();
         renderCoachRoster();
         renderCoachDashboardMetrics();
+        populatePlanAthleteSelect();
         alert(`${athleteName} has been removed from the directory.`);
       }
     }
 
+    // MONTHLY DRILL PLAN BUILDER LOGIC
+    function populatePlanAthleteSelect() {
+      const sel = document.getElementById('plan-select-athlete');
+      if (!sel) return;
+      sel.innerHTML = '';
+
+      let count = 0;
+      state.parents.forEach(p => {
+        (p.athletes || []).forEach(a => {
+          const opt = document.createElement('option');
+          opt.value = a.name;
+          opt.innerText = `${a.name} (${p.name})`;
+          sel.appendChild(opt);
+          count++;
+        });
+      });
+
+      if (count === 0) {
+        sel.innerHTML = '<option value="">No registered athletes yet</option>';
+      } else {
+        loadSelectedAthletePlan();
+      }
+    }
+
+    function loadSelectedAthletePlan() {
+      const sel = document.getElementById('plan-select-athlete');
+      if (!sel || !sel.value) return;
+
+      const athleteName = sel.value;
+      const plan = state.athletePlans[athleteName] || {};
+
+      document.getElementById('plan-target-month').value = plan.month || `${new Date().toLocaleString('default', { month: 'long' })} ${new Date().getFullYear()} Development Plan`;
+      document.getElementById('plan-text-content').value = plan.planText || '';
+    }
+
+    function handleSaveAthleteMonthlyPlan(e) {
+      e.preventDefault();
+      const sel = document.getElementById('plan-select-athlete');
+      const athleteName = sel.value;
+      const monthTitle = document.getElementById('plan-target-month').value.trim();
+      const planContent = document.getElementById('plan-text-content').value.trim();
+
+      if (!athleteName) {
+        alert('Please select an athlete.');
+        return;
+      }
+
+      state.athletePlans[athleteName] = {
+        month: monthTitle,
+        planText: planContent,
+        updatedAt: new Date().toISOString()
+      };
+
+      saveState();
+      syncToCloud();
+      renderAthleteView();
+      alert(`Monthly drill plan published for ${athleteName}! It is now visible on their Athlete Portal.`);
+    }
+
+    // SESSION NOTES MODAL HANDLER
+    function openSessionNotesModal(lessonId) {
+      state.activeLessonIdForNotes = lessonId;
+      const lesson = state.lessons.find(l => l.id === lessonId);
+      if (!lesson) return;
+
+      document.getElementById('notes-modal-athlete-session').innerText = `${lesson.athleteName} - ${lesson.type === 'class' ? 'Fielding Class' : 'Private Lesson'}`;
+      document.getElementById('notes-modal-datetime').innerText = `${normalizeDateString(lesson.date)} @ ${formatTimeDisplay(lesson.time)}`;
+      document.getElementById('notes-modal-textarea').value = lesson.notes || '';
+
+      document.getElementById('modal-session-notes').classList.remove('hidden');
+    }
+
+    function closeSessionNotesModal() {
+      document.getElementById('modal-session-notes').classList.add('hidden');
+      state.activeLessonIdForNotes = null;
+    }
+
+    function saveSessionNotes() {
+      const lesson = state.lessons.find(l => l.id === state.activeLessonIdForNotes);
+      if (lesson) {
+        lesson.notes = document.getElementById('notes-modal-textarea').value.trim();
+        saveState();
+        syncToCloud();
+        closeSessionNotesModal();
+        renderCoachDaySummary();
+        renderAthleteView();
+        alert(`Session notes updated for ${lesson.athleteName}!`);
+      }
+    }
+
     function switchCoachSubTab(tab) {
-      ['calendar', 'roster', 'slots', 'classes', 'direct', 'billing'].forEach(t => {
+      ['calendar', 'roster', 'plans', 'slots', 'classes', 'direct', 'billing'].forEach(t => {
         document.getElementById(`coach-content-${t}`).classList.add('hidden');
         document.getElementById(`coach-tab-${t}`).className = 'px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900';
       });
@@ -1965,6 +2151,7 @@
         renderCoachDaySummary();
       }
       if (tab === 'roster') renderCoachRoster();
+      if (tab === 'plans') populatePlanAthleteSelect();
       if (tab === 'classes') renderCoachPublishedClasses();
       if (tab === 'direct') populateCoachStudentSelect();
       if (tab === 'billing') renderInvoices();
@@ -1987,6 +2174,7 @@
       renderCoachPublishedSlots();
       renderCoachPublishedClasses();
       populateCoachStudentSelect();
+      populatePlanAthleteSelect();
     }
 
     // COACH MASTER CALENDAR
@@ -2080,18 +2268,24 @@
         dayLessons.forEach(l => {
           const isClass = (l.type === 'class');
           const item = document.createElement('div');
-          item.className = `p-2.5 rounded-lg bg-white border ${isClass ? 'border-amber-300' : 'border-blue-200'} flex items-center justify-between text-xs`;
+          item.className = `p-2.5 rounded-lg bg-white border ${isClass ? 'border-amber-300' : 'border-blue-200'} flex flex-col space-y-2 text-xs`;
           item.innerHTML = `
-            <div>
-              <span class="font-extrabold ${isClass ? 'text-amber-900' : 'text-blue-900'}">${formatTimeDisplay(l.time)} • ${l.athleteName}</span>
-              <p class="text-[11px] text-slate-500">${isClass ? 'Fielding Class' : l.duration + 'm'} • ${l.paymentStatus.includes('paid') ? '✓ Paid' : '⏳ Due'}</p>
+            <div class="flex items-center justify-between">
+              <div>
+                <span class="font-extrabold ${isClass ? 'text-amber-900' : 'text-blue-900'}">${formatTimeDisplay(l.time)} • ${l.athleteName}</span>
+                <p class="text-[11px] text-slate-500">${isClass ? 'Fielding Class' : l.duration + 'm'} • ${l.paymentStatus.includes('paid') ? '✓ Paid' : '⏳ Due'}</p>
+              </div>
+              <div class="flex items-center space-x-1.5">
+                <button onclick="openSessionNotesModal('${l.id}')" class="px-2 py-1 rounded bg-blue-50 border border-blue-200 text-blue-700 font-bold text-[10px]">
+                  📝 ${l.notes ? 'Edit Notes' : 'Add Notes'}
+                </button>
+                <button onclick="toggleLessonCompleted('${l.id}')" class="px-2 py-1 rounded bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-[10px]">
+                  ${l.completed ? '✓ Done' : 'Complete'}
+                </button>
+                <button onclick="promptCancelLesson('${l.id}')" class="text-red-600 hover:text-red-800 font-bold text-[11px] ml-1">Cancel</button>
+              </div>
             </div>
-            <div class="flex items-center space-x-2">
-              <button onclick="toggleLessonCompleted('${l.id}')" class="px-2 py-1 rounded bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-[10px]">
-                ${l.completed ? '✓ Done' : 'Mark Complete'}
-              </button>
-              <button onclick="promptCancelLesson('${l.id}')" class="text-red-600 hover:text-red-800 font-bold text-[11px]">Cancel / Free</button>
-            </div>
+            ${l.notes ? `<div class="p-2 bg-slate-50 rounded border text-[11px] text-slate-700"><b>Session Notes:</b> ${l.notes}</div>` : ''}
           `;
           bookedFeed.appendChild(item);
         });
@@ -2402,7 +2596,8 @@
         paymentStatus: payment === 'credit' ? 'paid_credit' : 'unpaid_due',
         paymentMethod: payment,
         price: price,
-        completed: false
+        completed: false,
+        notes: ''
       };
       state.lessons.push(newLesson);
 
@@ -2424,7 +2619,7 @@
       alert(`Lesson locked for ${athleteName} on ${date} at ${formatTimeDisplay(time)}!`);
     }
 
-    // PAYMENT TRACKER: RENDER WITH DELETE / WAIVE BUTTON
+    // PAYMENT TRACKER
     function renderInvoices() {
       const feed = document.getElementById('coach-invoices-feed');
       feed.innerHTML = '';
