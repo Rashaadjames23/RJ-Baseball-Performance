@@ -188,7 +188,6 @@
             </div>
             
             <div class="flex items-center space-x-3">
-              <!-- WEEKLY / MONTHLY TOGGLE -->
               <div class="flex bg-slate-100 p-1 rounded-xl text-xs font-bold">
                 <button id="toggle-view-monthly" onclick="setCalendarLayout('monthly')" class="px-3 py-1 rounded-lg bg-white text-slate-900 shadow-sm">Month</button>
                 <button id="toggle-view-weekly" onclick="setCalendarLayout('weekly')" class="px-3 py-1 rounded-lg text-slate-600 hover:text-slate-900">Week</button>
@@ -555,12 +554,12 @@
         </form>
       </div>
 
-      <!-- COACH TAB 3: PAYMENT TRACKER -->
+      <!-- COACH TAB 3: PAYMENT TRACKER WITH DELETE / WAIVE BUTTON -->
       <div id="coach-content-billing" class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4 hidden">
         <div class="flex items-center justify-between border-b border-slate-100 pb-3">
           <div>
             <h4 class="text-base font-black text-slate-900">Lesson Invoices & Payment Confirmations</h4>
-            <p class="text-xs text-slate-500">Confirm Venmo (@Richard-James-256), Zelle (346-660-1074 - Richard James), or cash payments.</p>
+            <p class="text-xs text-slate-500">Confirm payments or waive fees by deleting unwanted charges.</p>
           </div>
         </div>
         <div id="coach-invoices-feed" class="space-y-2"></div>
@@ -2108,6 +2107,7 @@
       alert(`Lesson locked for ${athleteName} on ${date} at ${formatTimeDisplay(time)}!`);
     }
 
+    // PAYMENT TRACKER: RENDER WITH DELETE / WAIVE BUTTON
     function renderInvoices() {
       const feed = document.getElementById('coach-invoices-feed');
       feed.innerHTML = '';
@@ -2117,16 +2117,19 @@
       }
       state.invoices.forEach(inv => {
         const row = document.createElement('div');
-        row.className = 'p-3 rounded-xl border border-slate-200 flex items-center justify-between text-xs';
+        row.className = 'p-3 rounded-xl border border-slate-200 flex items-center justify-between text-xs bg-white shadow-sm';
         row.innerHTML = `
           <div>
             <span class="font-extrabold text-slate-900">${inv.id} • ${inv.athleteName}</span>
             <span class="text-slate-500 ml-2">${normalizeDateString(inv.date)} (${inv.method})</span>
           </div>
-          <div class="flex items-center space-x-3">
-            <span class="font-black text-slate-900">$${inv.amount}</span>
+          <div class="flex items-center space-x-2">
+            <span class="font-black text-slate-900 mr-1">$${inv.amount}</span>
             <span class="px-2 py-0.5 rounded-full font-bold ${inv.status === 'Paid' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}">${inv.status}</span>
-            ${inv.status !== 'Paid' ? `<button onclick="confirmInvoicePaid('${inv.id}')" class="px-2 py-1 rounded bg-emerald-600 text-white font-bold text-[10px]">✓ Confirm Payment</button>` : ''}
+            ${inv.status !== 'Paid' ? `<button onclick="confirmInvoicePaid('${inv.id}')" class="px-2 py-1 rounded bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[10px]">✓ Paid</button>` : ''}
+            <button onclick="deleteInvoice('${inv.id}')" class="px-2 py-1 rounded border border-red-200 bg-red-50 hover:bg-red-100 text-red-600 font-bold text-[10px]">
+              Waive / Delete
+            </button>
           </div>
         `;
         feed.appendChild(row);
@@ -2140,6 +2143,21 @@
       syncToCloud();
       renderInvoices();
       renderCoachDashboardMetrics();
+    }
+
+    // DELETE / WAIVE INVOICE HANDLER
+    async function deleteInvoice(invId) {
+      const inv = state.invoices.find(i => i.id === invId);
+      if (!inv) return;
+
+      const confirmed = confirm(`Are you sure you want to waive and delete invoice ${inv.id} ($${inv.amount} for ${inv.athleteName})? This will remove the charge from the payment tracker.`);
+      if (confirmed) {
+        state.invoices = state.invoices.filter(i => i.id !== invId);
+        saveState();
+        syncToCloud();
+        renderInvoices();
+        renderCoachDashboardMetrics();
+      }
     }
 
     // PACKAGE PURCHASE WITH MANDATORY POLICY CONSENT ($760 FOR 8 PACK)
