@@ -410,6 +410,10 @@
           <button id="coach-tab-calendar" onclick="switchCoachSubTab('calendar')" class="px-3 py-1.5 rounded-lg bg-white text-slate-900 shadow-sm">
             Master Calendar
           </button>
+          <button id="coach-tab-upcoming" onclick="switchCoachSubTab('upcoming')" class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 flex items-center space-x-1">
+            <span>Upcoming Lessons</span>
+            <span id="coach-upcoming-counter-badge" class="px-1.5 py-0.2 rounded-full text-[9px] bg-blue-600 text-white font-extrabold">0</span>
+          </button>
           <button id="coach-tab-roster" onclick="switchCoachSubTab('roster')" class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900">
             Athletes & Directory
           </button>
@@ -466,6 +470,22 @@
             </div>
           </div>
         </div>
+      </div>
+
+      <!-- COACH TAB: UPCOMING BOOKED LESSONS FEED -->
+      <div id="coach-content-upcoming" class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-6 hidden">
+        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
+          <div>
+            <h4 class="text-base font-black text-slate-900">Upcoming Booked Lessons & Classes</h4>
+            <p class="text-xs text-slate-500">Chronological roster of all future sessions booked across your schedule.</p>
+          </div>
+          <div class="flex items-center space-x-1.5 bg-slate-100 p-1 rounded-xl text-xs font-bold">
+            <button onclick="renderCoachUpcomingSchedule('all')" id="filter-upcoming-all" class="px-3 py-1 rounded-lg bg-white text-slate-900 shadow-sm">All</button>
+            <button onclick="renderCoachUpcomingSchedule('lesson')" id="filter-upcoming-lessons" class="px-3 py-1 rounded-lg text-slate-600 hover:text-slate-900">Private Lessons</button>
+            <button onclick="renderCoachUpcomingSchedule('class')" id="filter-upcoming-classes" class="px-3 py-1 rounded-lg text-slate-600 hover:text-slate-900">Fielding Classes</button>
+          </div>
+        </div>
+        <div id="coach-upcoming-lessons-list" class="space-y-3"></div>
       </div>
 
       <!-- COACH TAB: MONTHLY DRILL & WORKOUT PLANS -->
@@ -868,6 +888,7 @@
       activeSlotIdForBooking: null,
       activeLessonIdToCancel: null,
       activeLessonIdForNotes: null,
+      upcomingFilter: 'all',
       isStandingReservation: false,
       isBookingFieldingClass: false,
       parents: [],
@@ -935,6 +956,7 @@
           renderCoachDashboardMetrics();
           renderCoachCalendarDays();
           renderCoachDaySummary();
+          renderCoachUpcomingSchedule(state.upcomingFilter);
           renderCoachRoster();
 
           if (!document.getElementById('view-instructor').classList.contains('hidden')) {
@@ -1231,8 +1253,8 @@
       } else {
         btnW.className = 'px-3 py-1 rounded-lg bg-white text-slate-900 shadow-sm';
         btnM.className = 'px-3 py-1 rounded-lg text-slate-600 hover:text-slate-900';
-        viewW.classList.remove('hidden');
-        viewM.classList.add('hidden');
+        viewM.classList.remove('hidden');
+        viewW.classList.add('hidden');
         renderCalendarWeeklyStrip();
       }
     }
@@ -1271,6 +1293,7 @@
       renderOpenSlots();
       renderCoachCalendarDays();
       renderCoachDaySummary();
+      renderCoachUpcomingSchedule(state.upcomingFilter);
     }
 
     // MONTHLY GRID RENDER
@@ -1694,6 +1717,7 @@
         renderCoachDashboardMetrics();
         renderCoachCalendarDays();
         renderCoachDaySummary();
+        renderCoachUpcomingSchedule(state.upcomingFilter);
         return;
       }
 
@@ -1777,6 +1801,7 @@
       renderCoachDashboardMetrics();
       renderCoachCalendarDays();
       renderCoachDaySummary();
+      renderCoachUpcomingSchedule(state.upcomingFilter);
       alert(`Lesson locked for ${athlete}! Confirmation email sent to ${state.currentParent.email} and Coach RJ.`);
     }
 
@@ -1895,6 +1920,7 @@
       renderCoachDashboardMetrics();
       renderCoachCalendarDays();
       renderCoachDaySummary();
+      renderCoachUpcomingSchedule(state.upcomingFilter);
       alert('Cancellation complete. The spot has been reopened.');
     }
 
@@ -1968,6 +1994,114 @@
       });
     }
 
+    // --- COACH COMMAND CENTER: UPCOMING BOOKED LESSONS FEED ---
+    function renderCoachUpcomingSchedule(filter = 'all') {
+      state.upcomingFilter = filter;
+      const container = document.getElementById('coach-upcoming-lessons-list');
+      if (!container) return;
+      container.innerHTML = '';
+
+      ['all', 'lessons', 'classes'].forEach(f => {
+        const btn = document.getElementById(`filter-upcoming-${f}`);
+        if (btn) btn.className = 'px-3 py-1 rounded-lg text-slate-600 hover:text-slate-900';
+      });
+      const activeBtn = document.getElementById(`filter-upcoming-${filter === 'lesson' ? 'lessons' : (filter === 'class' ? 'classes' : 'all')}`);
+      if (activeBtn) activeBtn.className = 'px-3 py-1 rounded-lg bg-white text-slate-900 shadow-sm';
+
+      const upcoming = state.lessons.filter(l => {
+        const cleanDate = normalizeDateString(l.date);
+        const isFutureOrToday = cleanDate >= CURRENT_SYSTEM_DATE;
+        const matchesCompletion = !l.completed;
+        const matchesType = (filter === 'all') || (filter === 'lesson' && l.type !== 'class') || (filter === 'class' && l.type === 'class');
+        return isFutureOrToday && matchesCompletion && matchesType;
+      });
+
+      upcoming.sort((a, b) => {
+        const dateA = normalizeDateString(a.date);
+        const dateB = normalizeDateString(b.date);
+        if (dateA !== dateB) return dateA.localeCompare(dateB);
+        return normalizeTimeString(a.time).localeCompare(normalizeTimeString(b.time));
+      });
+
+      const badge = document.getElementById('coach-upcoming-counter-badge');
+      if (badge) badge.innerText = upcoming.length;
+
+      if (upcoming.length === 0) {
+        container.innerHTML = `
+          <div class="py-12 text-center text-slate-400 border border-dashed border-slate-200 rounded-2xl">
+            <span class="text-3xl block mb-2">📅</span>
+            <p class="font-bold text-sm text-slate-700">No upcoming booked sessions.</p>
+            <p class="text-xs text-slate-400 mt-1">Open slots and classes booked by parents will automatically appear in this feed.</p>
+          </div>
+        `;
+        return;
+      }
+
+      upcoming.forEach(l => {
+        const isClass = (l.type === 'class');
+        const parentInfo = state.parents.find(p => String(p.email || '').trim().toLowerCase() === String(l.parentEmail || '').trim().toLowerCase()) || {};
+        const parentPhone = parentInfo.phone || 'Phone on file';
+        const parentName = parentInfo.name || 'Parent';
+
+        const [y, m, d] = normalizeDateString(l.date).split('-');
+        const dateObj = new Date(Number(y), Number(m) - 1, Number(d));
+        const formattedDate = dateObj.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+        const gCalUrl = generateGoogleCalendarUrl(l);
+
+        const card = document.createElement('div');
+        card.className = `p-4 rounded-xl border ${isClass ? 'border-amber-300 bg-amber-50/40' : 'border-blue-200 bg-white'} shadow-sm flex flex-col space-y-3`;
+        card.innerHTML = `
+          <div class="flex flex-wrap items-start justify-between gap-2">
+            <div>
+              <div class="flex items-center space-x-2">
+                <span class="text-xs font-black px-2 py-0.5 rounded-full ${isClass ? 'bg-amber-200 text-amber-900' : 'bg-blue-100 text-blue-800'}">
+                  ${isClass ? '👥 Fielding Class' : '⚾ 1-on-1 Lesson'}
+                </span>
+                <span class="text-sm font-black text-slate-900">${formattedDate} @ ${formatTimeDisplay(l.time)}</span>
+                <span class="text-xs text-slate-500 font-semibold">(${l.duration || 60}m)</span>
+              </div>
+              <h5 class="text-base font-black text-slate-900 mt-1">${l.athleteName} <span class="text-xs font-normal text-slate-500">(${parentName})</span></h5>
+              <div class="flex items-center space-x-3 text-xs text-slate-600 mt-0.5">
+                <a href="tel:${parentPhone}" class="text-blue-600 font-bold hover:underline">📞 ${parentPhone}</a>
+                <span>•</span>
+                <a href="mailto:${l.parentEmail}" class="text-blue-600 font-bold hover:underline">✉️ ${l.parentEmail}</a>
+              </div>
+            </div>
+            <div class="flex items-center space-x-2">
+              <span class="px-2.5 py-1 rounded-full text-xs font-black ${l.paymentStatus.includes('paid') ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
+                ${l.paymentStatus.includes('paid') ? '✓ Paid' : '⏳ Payment Due ($' + (l.price || (isClass ? 50 : 100)) + ')'}
+              </span>
+            </div>
+          </div>
+
+          ${l.notes ? `
+            <div class="p-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-700">
+              <span class="font-bold text-slate-900 block text-[11px] uppercase tracking-wider">Coach Evaluation Notes:</span>
+              <p class="whitespace-pre-line mt-0.5">${l.notes}</p>
+            </div>
+          ` : ''}
+
+          <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t ${isClass ? 'border-amber-200' : 'border-slate-100'}">
+            <div class="flex items-center space-x-2">
+              <button onclick="openSessionNotesModal('${l.id}')" class="px-3 py-1.5 rounded-lg bg-blue-50 border border-blue-200 hover:bg-blue-100 text-blue-700 font-bold text-xs">
+                📝 ${l.notes ? 'Edit Notes' : '+ Add Notes'}
+              </button>
+              <button onclick="toggleLessonCompleted('${l.id}')" class="px-3 py-1.5 rounded-lg bg-emerald-50 border border-emerald-200 hover:bg-emerald-100 text-emerald-800 font-bold text-xs">
+                ✓ Complete Session
+              </button>
+              <a href="${gCalUrl}" target="_blank" class="px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-100 text-slate-700 font-bold text-xs">
+                + Google Cal
+              </a>
+            </div>
+            <button onclick="promptCancelLesson('${l.id}')" class="text-red-600 hover:text-red-800 font-bold text-xs">
+              Cancel / Refund
+            </button>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
     // --- COACH COMMAND CENTER & DIRECTORY ---
     function renderCoachDashboardMetrics() {
       const openSlotsCount = state.publishedSlots.filter(s => s.status === 'open').length;
@@ -1990,6 +2124,10 @@
       });
       document.getElementById('metric-active-students').innerText = studentCount;
       document.getElementById('metric-scheduled-lessons').innerText = state.lessons.length;
+
+      const upcomingCount = state.lessons.filter(l => normalizeDateString(l.date) >= CURRENT_SYSTEM_DATE && !l.completed).length;
+      const badge = document.getElementById('coach-upcoming-counter-badge');
+      if (badge) badge.innerText = upcomingCount;
     }
 
     function renderCoachRoster() {
@@ -2173,13 +2311,14 @@
         syncToCloud();
         closeSessionNotesModal();
         renderCoachDaySummary();
+        renderCoachUpcomingSchedule(state.upcomingFilter);
         renderAthleteView();
         alert(`Session notes updated for ${lesson.athleteName}!`);
       }
     }
 
     function switchCoachSubTab(tab) {
-      ['calendar', 'roster', 'plans', 'slots', 'classes', 'direct', 'billing'].forEach(t => {
+      ['calendar', 'upcoming', 'roster', 'plans', 'slots', 'classes', 'direct', 'billing'].forEach(t => {
         document.getElementById(`coach-content-${t}`).classList.add('hidden');
         document.getElementById(`coach-tab-${t}`).className = 'px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900';
       });
@@ -2191,6 +2330,7 @@
         renderCoachCalendarDays();
         renderCoachDaySummary();
       }
+      if (tab === 'upcoming') renderCoachUpcomingSchedule(state.upcomingFilter);
       if (tab === 'roster') renderCoachRoster();
       if (tab === 'plans') populatePlanAthleteSelect();
       if (tab === 'classes') renderCoachPublishedClasses();
@@ -2211,6 +2351,7 @@
       renderCoachDashboardMetrics();
       renderCoachCalendarDays();
       renderCoachDaySummary();
+      renderCoachUpcomingSchedule(state.upcomingFilter);
       renderCoachRoster();
       renderCoachPublishedSlots();
       renderCoachPublishedClasses();
@@ -2362,6 +2503,7 @@
         saveState();
         syncToCloud();
         renderCoachDaySummary();
+        renderCoachUpcomingSchedule(state.upcomingFilter);
         renderAthleteView();
       }
     }
@@ -2398,6 +2540,7 @@
       renderCoachPublishedClasses();
       renderCoachCalendarDays();
       renderCoachDaySummary();
+      renderCoachUpcomingSchedule(state.upcomingFilter);
       renderCoachDashboardMetrics();
       renderCalendarDays();
       renderCalendarWeeklyStrip();
@@ -2464,6 +2607,7 @@
       renderCoachPublishedSlots();
       renderCoachCalendarDays();
       renderCoachDaySummary();
+      renderCoachUpcomingSchedule(state.upcomingFilter);
       renderCoachDashboardMetrics();
       renderCalendarDays();
       renderCalendarWeeklyStrip();
@@ -2500,6 +2644,7 @@
       renderCoachPublishedSlots();
       renderCoachCalendarDays();
       renderCoachDaySummary();
+      renderCoachUpcomingSchedule(state.upcomingFilter);
       renderCoachDashboardMetrics();
       renderCalendarDays();
       renderCalendarWeeklyStrip();
@@ -2540,6 +2685,7 @@
       renderCoachPublishedSlots();
       renderCoachCalendarDays();
       renderCoachDaySummary();
+      renderCoachUpcomingSchedule(state.upcomingFilter);
       renderCoachDashboardMetrics();
       renderCalendarDays();
       renderCalendarWeeklyStrip();
@@ -2576,6 +2722,7 @@
       renderCoachPublishedClasses();
       renderCoachCalendarDays();
       renderCoachDaySummary();
+      renderCoachUpcomingSchedule(state.upcomingFilter);
       renderCoachDashboardMetrics();
       renderCalendarDays();
       renderCalendarWeeklyStrip();
@@ -2657,6 +2804,7 @@
       renderCoachDashboardMetrics();
       renderCoachCalendarDays();
       renderCoachDaySummary();
+      renderCoachUpcomingSchedule(state.upcomingFilter);
       alert(`Lesson locked for ${athleteName} on ${date} at ${formatTimeDisplay(time)}!`);
     }
 
