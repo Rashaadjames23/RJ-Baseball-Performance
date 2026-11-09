@@ -363,7 +363,7 @@
     <!-- ========================================== -->
     <!-- 3. INSTRUCTOR COMMAND CENTER (COACH ONLY)   -->
     <!-- ========================================== -->
-    <div id="view-instructor" class="space-y-6 hidden relative z-10">
+    <div id="view-instructor" class="space-y-6 hidden">
       
       <!-- STAT BUBBLES -->
       <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
@@ -400,13 +400,13 @@
         </div>
       </div>
 
-      <!-- Command Center Sub-Navbar (Explicit Z-Index for Reliable Clicking) -->
-      <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm flex flex-wrap items-center justify-between gap-4 relative z-30">
+      <!-- Command Center Sub-Navbar -->
+      <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm flex flex-wrap items-center justify-between gap-4">
         <div>
           <h2 class="text-xl font-black text-slate-900">Coach RJ Command Center</h2>
           <p class="text-xs text-slate-500">Manage lesson slots, fielding classes, drill plans, and payments.</p>
         </div>
-        <div class="flex flex-wrap items-center gap-1 bg-slate-100 p-1 rounded-xl text-xs font-bold">
+        <div class="flex items-center space-x-1 bg-slate-100 p-1 rounded-xl text-xs font-bold">
           <button id="coach-tab-calendar" onclick="switchCoachSubTab('calendar')" class="px-3 py-1.5 rounded-lg bg-white text-slate-900 shadow-sm">
             Master Calendar
           </button>
@@ -698,7 +698,7 @@
 
   </main>
 
-  <!-- MODAL: COACH SESSION NOTES EDITOR (STRICTLY HIDDEN BY DEFAULT) -->
+  <!-- MODAL: COACH SESSION NOTES EDITOR -->
   <div id="modal-session-notes" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-start justify-center pt-16 sm:pt-20 px-4 hidden">
     <div class="bg-white rounded-2xl border border-slate-200 max-w-md w-full p-6 shadow-2xl space-y-4">
       <div class="flex items-center justify-between border-b border-slate-100 pb-3">
@@ -722,7 +722,7 @@
     </div>
   </div>
 
-  <!-- MODAL: BOOK LESSON CONFIRMATION & STANDING TIME OPTION (STRICTLY HIDDEN BY DEFAULT) -->
+  <!-- MODAL: BOOK LESSON CONFIRMATION & STANDING TIME OPTION -->
   <div id="modal-book-slot" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-start justify-center pt-16 sm:pt-20 px-4 hidden">
     <div class="bg-white rounded-2xl border border-slate-200 max-w-md w-full p-6 shadow-2xl space-y-4">
       <div class="flex items-center justify-between border-b border-slate-100 pb-3">
@@ -806,7 +806,7 @@
     </div>
   </div>
 
-  <!-- MODAL: CANCELLATION & POLICY MODAL (STRICTLY HIDDEN BY DEFAULT) -->
+  <!-- MODAL: CANCELLATION & POLICY MODAL -->
   <div id="modal-cancel-lesson" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-start justify-center pt-16 sm:pt-24 px-4 hidden">
     <div class="bg-white rounded-2xl border border-slate-200 max-w-md w-full p-6 shadow-2xl space-y-4">
       <div class="flex items-center justify-between border-b border-slate-100 pb-3">
@@ -1106,41 +1106,6 @@
       }
     }
 
-    // COACH COMMAND CENTER SUB-TAB SWITCHING FIX
-    function switchCoachSubTab(tabName) {
-      const tabs = ['calendar', 'upcoming', 'roster', 'plans', 'slots', 'classes', 'direct', 'billing'];
-      
-      tabs.forEach(t => {
-        const contentEl = document.getElementById(`coach-content-${t}`);
-        const tabBtn = document.getElementById(`coach-tab-${t}`);
-        
-        if (contentEl) {
-          if (t === tabName) {
-            contentEl.classList.remove('hidden');
-          } else {
-            contentEl.classList.add('hidden');
-          }
-        }
-        
-        if (tabBtn) {
-          if (t === tabName) {
-            tabBtn.className = 'px-3 py-1.5 rounded-lg bg-white text-slate-900 shadow-sm flex items-center space-x-1';
-          } else {
-            tabBtn.className = 'px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 flex items-center space-x-1';
-          }
-        }
-      });
-
-      // Trigger specific renders when switching tabs
-      if (tabName === 'slots') renderCoachPublishedSlots();
-      if (tabName === 'classes') renderCoachPublishedClasses();
-      if (tabName === 'billing') renderInvoices();
-      if (tabName === 'roster') renderCoachRoster();
-      if (tabName === 'direct') populateCoachStudentSelect();
-      if (tabName === 'plans') populatePlanAthleteSelect();
-      if (tabName === 'upcoming') renderCoachUpcomingSchedule(state.upcomingFilter);
-    }
-
     // PARENT AUTHENTICATION
     function toggleParentAuthMode(mode) {
       const tabL = document.getElementById('auth-tab-login');
@@ -1288,8 +1253,8 @@
       } else {
         btnW.className = 'px-3 py-1 rounded-lg bg-white text-slate-900 shadow-sm';
         btnM.className = 'px-3 py-1 rounded-lg text-slate-600 hover:text-slate-900';
-        viewW.classList.remove('hidden');
-        viewM.classList.add('hidden');
+        viewM.classList.remove('hidden');
+        viewW.classList.add('hidden');
         renderCalendarWeeklyStrip();
       }
     }
@@ -1314,19 +1279,6 @@
       renderOpenSlots();
     }
 
-    // MASTER CALENDAR MONTH NAVIGATION FIX
-    function navigateCoachCalendarMonth(delta) {
-      state.currentCalMonth += delta;
-      if (state.currentCalMonth < 0) {
-        state.currentCalMonth = 11;
-        state.currentCalYear--;
-      } else if (state.currentCalMonth > 11) {
-        state.currentCalMonth = 0;
-        state.currentCalYear++;
-      }
-      renderCoachCalendarDays();
-    }
-
     function jumpToCurrentToday() {
       state.selectedCalDate = CURRENT_SYSTEM_DATE;
       const d = new Date();
@@ -1344,7 +1296,7 @@
       renderCoachUpcomingSchedule(state.upcomingFilter);
     }
 
-    // MONTHLY GRID RENDER (PAST DATES GREYED OUT)
+    // MONTHLY GRID RENDER
     function renderCalendarDays() {
       const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
       document.getElementById('calendar-header-title').innerText = `${monthNames[state.currentCalMonth]} ${state.currentCalYear}`;
@@ -1368,7 +1320,6 @@
         
         const isSelected = normalizeDateString(state.selectedCalDate) === dateStr;
         const isToday = dateStr === CURRENT_SYSTEM_DATE;
-        const isPast = dateStr < CURRENT_SYSTEM_DATE;
 
         const cell = document.createElement('button');
         cell.onclick = () => {
@@ -1383,8 +1334,6 @@
           cellStyle += 'border-blue-600 bg-blue-50/60 ring-2 ring-blue-600/30 font-bold';
         } else if (isToday) {
           cellStyle += 'border-slate-400 bg-slate-100 font-bold';
-        } else if (isPast) {
-          cellStyle += 'border-slate-200/60 bg-slate-100/75 opacity-45 cursor-not-allowed hover:border-slate-300';
         } else {
           cellStyle += 'border-slate-200 bg-white hover:border-blue-400';
         }
@@ -1392,20 +1341,20 @@
         cell.className = cellStyle;
         cell.innerHTML = `
           <div class="flex items-center justify-between w-full">
-            <span class="text-xs ${isSelected ? 'text-blue-700 font-black' : (isToday ? 'text-black font-extrabold' : (isPast ? 'text-slate-400 font-medium' : 'text-slate-700'))}">${day}</span>
+            <span class="text-xs ${isSelected ? 'text-blue-700 font-black' : (isToday ? 'text-black font-extrabold' : 'text-slate-700')}">${day}</span>
             ${isToday ? '<span class="text-[9px] bg-black text-white font-black px-1 rounded">TODAY</span>' : ''}
           </div>
           <div class="flex items-center space-x-1 text-[9px]">
-            ${!isPast && dayLessons.length > 0 ? `<span class="w-1.5 h-1.5 rounded-full bg-blue-600"></span>` : ''}
-            ${!isPast && dayClasses.length > 0 ? `<span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>` : ''}
-            ${isPast || (dayLessons.length === 0 && dayClasses.length === 0) ? '<span class="text-slate-300 text-[10px]">—</span>' : ''}
+            ${dayLessons.length > 0 ? `<span class="w-1.5 h-1.5 rounded-full bg-blue-600"></span>` : ''}
+            ${dayClasses.length > 0 ? `<span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>` : ''}
+            ${dayLessons.length === 0 && dayClasses.length === 0 ? '<span class="text-slate-300 text-[10px]">—</span>' : ''}
           </div>
         `;
         grid.appendChild(cell);
       }
     }
 
-    // WEEKLY STRIP RENDER (PAST DATES GREYED OUT)
+    // WEEKLY STRIP RENDER
     function renderCalendarWeeklyStrip() {
       const strip = document.getElementById('calendar-weekly-strip');
       strip.innerHTML = '';
@@ -1421,8 +1370,6 @@
         const dayLessons = state.publishedSlots.filter(s => normalizeDateString(s.date) === dateStr && s.type !== 'class' && s.status === 'open');
         const dayClasses = state.publishedSlots.filter(s => normalizeDateString(s.date) === dateStr && s.type === 'class' && (s.bookedCount || 0) < 4);
         const isSelected = normalizeDateString(state.selectedCalDate) === dateStr;
-        const isToday = dateStr === CURRENT_SYSTEM_DATE;
-        const isPast = dateStr < CURRENT_SYSTEM_DATE;
 
         const cell = document.createElement('button');
         cell.onclick = () => {
@@ -1435,10 +1382,6 @@
         let cellStyle = 'h-20 rounded-xl border p-2 text-left flex flex-col justify-between transition ';
         if (isSelected) {
           cellStyle += 'border-blue-600 bg-blue-50/70 ring-2 ring-blue-600/30 font-bold';
-        } else if (isToday) {
-          cellStyle += 'border-slate-400 bg-slate-100 font-bold';
-        } else if (isPast) {
-          cellStyle += 'border-slate-200/60 bg-slate-100/75 opacity-45 cursor-not-allowed hover:border-slate-300';
         } else {
           cellStyle += 'border-slate-200 bg-white hover:border-blue-400';
         }
@@ -1447,12 +1390,12 @@
         cell.innerHTML = `
           <div>
             <span class="text-[10px] uppercase font-bold text-slate-400 block">${dayNames[i]}</span>
-            <span class="text-sm font-black ${isSelected ? 'text-blue-700' : (isToday ? 'text-black' : (isPast ? 'text-slate-400' : 'text-slate-800'))}">${curDate.getDate()}</span>
+            <span class="text-sm font-black ${isSelected ? 'text-blue-700' : 'text-slate-800'}">${curDate.getDate()}</span>
           </div>
           <div class="flex items-center space-x-1 text-[9px]">
-            ${!isPast && dayLessons.length > 0 ? '<span class="px-1 py-0.5 rounded bg-blue-100 text-blue-800 font-black">Slot</span>' : ''}
-            ${!isPast && dayClasses.length > 0 ? '<span class="px-1 py-0.5 rounded bg-amber-100 text-amber-800 font-black">Class</span>' : ''}
-            ${isPast || (dayLessons.length === 0 && dayClasses.length === 0) ? '<span class="text-slate-300 text-[10px]">—</span>' : ''}
+            ${dayLessons.length > 0 ? '<span class="px-1 py-0.5 rounded bg-blue-100 text-blue-800 font-black">Slot</span>' : ''}
+            ${dayClasses.length > 0 ? '<span class="px-1 py-0.5 rounded bg-amber-100 text-amber-800 font-black">Class</span>' : ''}
+            ${dayLessons.length === 0 && dayClasses.length === 0 ? '<span class="text-slate-300 text-[10px]">—</span>' : ''}
           </div>
         `;
         strip.appendChild(cell);
@@ -1466,22 +1409,10 @@
       container.innerHTML = '';
 
       const targetDate = normalizeDateString(state.selectedCalDate);
-      const isPast = targetDate < CURRENT_SYSTEM_DATE;
       const [y, m, d] = targetDate.split('-');
       const dateObj = new Date(Number(y), Number(m) - 1, Number(d));
       const formatted = dateObj.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' });
       heading.innerText = `Available on ${formatted}`;
-
-      if (isPast) {
-        container.innerHTML = `
-          <div class="col-span-full py-8 text-center text-slate-400 border border-dashed border-slate-200 rounded-2xl bg-slate-50/50">
-            <span class="text-2xl block mb-1">⏳</span>
-            <p class="font-bold text-sm text-slate-600">This date has already passed.</p>
-            <p class="text-xs text-slate-400 mt-1">Please select today or an upcoming highlighted date to view bookable slots.</p>
-          </div>
-        `;
-        return;
-      }
 
       const openSlots = state.publishedSlots.filter(s => normalizeDateString(s.date) === targetDate);
 
@@ -1638,10 +1569,11 @@
 
         const slot = state.publishedSlots.find(s => s.id === state.activeSlotIdForBooking);
         if (slot && previewBox) {
-          const [py, pm, pd] = normalizeDateString(slot.date).split('-').map(Number);
+          const baseDate = new Date(normalizeDateString(slot.date) + 'T00:00:00');
           let datesHtml = `<div class="font-bold text-blue-900 mb-1">Your 4 Consecutive Reserved Sessions:</div><ul class="space-y-1">`;
           for (let w = 0; w < 4; w++) {
-            const d = new Date(py, pm - 1, pd + (w * 7));
+            const d = new Date(baseDate);
+            d.setDate(baseDate.getDate() + (w * 7));
             const formatted = d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
             datesHtml += `
               <li class="flex items-center space-x-1.5 text-[11px] text-slate-700 font-semibold">
@@ -1698,7 +1630,6 @@
       const athlete = document.getElementById('modal-select-athlete').value;
       const paymentMethod = document.getElementById('modal-select-payment').value;
       const dateFormatted = normalizeDateString(slot.date);
-      const slotTimeNormalized = normalizeTimeString(slot.time);
 
       // --- 1. FIELDING CLASS BOOKING LOGIC ---
       if (slot.type === 'class') {
@@ -1743,7 +1674,7 @@
           id: 'CLASS-LES-' + Date.now(),
           slotId: slot.id,
           date: dateFormatted,
-          time: slotTimeNormalized,
+          time: normalizeTimeString(slot.time),
           duration: 60,
           athleteName: athlete,
           type: 'class',
@@ -1790,7 +1721,7 @@
         return;
       }
 
-      // --- 2. PRIVATE 1-ON-1 LESSON BOOKING (4-WEEK STANDING FIXED) ---
+      // --- 2. PRIVATE 1-ON-1 LESSON BOOKING ---
       const multiplier = state.isStandingReservation ? 4 : 1;
       const creditsNeeded = (state.activeDuration / 60) * multiplier;
       const totalCost = (state.activeDuration === 120 ? 200 : (state.activeDuration === 90 ? 150 : 100)) * multiplier;
@@ -1804,30 +1735,21 @@
         state.currentParent.credits = Number(state.currentParent.credits) - creditsNeeded;
       }
 
-      const [baseY, baseM, baseD] = dateFormatted.split('-').map(Number);
-      const bookedDatesList = [];
+      slot.status = 'booked';
+      const baseDate = new Date(dateFormatted + 'T00:00:00');
 
       for (let w = 0; w < multiplier; w++) {
-        const weekDateObj = new Date(baseY, baseM - 1, baseD + (w * 7));
-        const weekDateStr = `${weekDateObj.getFullYear()}-${pad(weekDateObj.getMonth() + 1)}-${pad(weekDateObj.getDate())}`;
-        bookedDatesList.push(weekDateStr);
+        const lessonDateObj = new Date(baseDate);
+        lessonDateObj.setDate(baseDate.getDate() + (w * 7));
+        const lessonDateStr = `${lessonDateObj.getFullYear()}-${pad(lessonDateObj.getMonth() + 1)}-${pad(lessonDateObj.getDate())}`;
 
-        const existingSlot = state.publishedSlots.find(s => 
-          normalizeDateString(s.date) === weekDateStr && 
-          normalizeTimeString(s.time) === slotTimeNormalized &&
-          s.type !== 'class'
-        );
-
-        let finalSlotId = '';
-        if (existingSlot) {
-          existingSlot.status = 'booked';
-          finalSlotId = existingSlot.id;
-        } else {
-          finalSlotId = 'SLOT-AUTO-' + Date.now() + '-' + w;
+        let matchedSlotId = slot.id;
+        if (w > 0) {
+          matchedSlotId = 'SLOT-AUTO-' + Date.now() + '-' + w;
           state.publishedSlots.push({
-            id: finalSlotId,
-            date: weekDateStr,
-            time: slotTimeNormalized,
+            id: matchedSlotId,
+            date: lessonDateStr,
+            time: slot.time,
             status: 'booked',
             type: 'lesson'
           });
@@ -1835,9 +1757,9 @@
 
         state.lessons.push({
           id: 'LES-' + Date.now() + '-' + w,
-          slotId: finalSlotId,
-          date: weekDateStr,
-          time: slotTimeNormalized,
+          slotId: matchedSlotId,
+          date: lessonDateStr,
+          time: normalizeTimeString(slot.time),
           duration: state.activeDuration,
           athleteName: athlete,
           type: 'lesson',
@@ -1865,7 +1787,7 @@
         parentName: state.currentParent.name,
         parentEmail: state.currentParent.email,
         parentPhone: state.currentParent.phone || '',
-        date: state.isStandingReservation ? `${dateFormatted} (4-Week Block: ${bookedDatesList.join(', ')})` : dateFormatted,
+        date: dateFormatted,
         time: formatTimeDisplay(slot.time),
         duration: state.activeDuration,
         sessionType: 'lesson',
@@ -1880,7 +1802,7 @@
       renderCoachCalendarDays();
       renderCoachDaySummary();
       renderCoachUpcomingSchedule(state.upcomingFilter);
-      alert(`Lesson locked for ${athlete}! ${state.isStandingReservation ? 'All 4 weeks have been locked on the schedule and overlapping slots removed.' : ''}`);
+      alert(`Lesson locked for ${athlete}! Confirmation email sent to ${state.currentParent.email} and Coach RJ.`);
     }
 
     function renderScheduledLessons() {
@@ -2180,7 +2102,277 @@
       });
     }
 
-    // COACH MASTER CALENDAR (PAST DATES GREYED OUT)
+    // --- COACH COMMAND CENTER & DIRECTORY ---
+    function renderCoachDashboardMetrics() {
+      const openSlotsCount = state.publishedSlots.filter(s => s.status === 'open').length;
+      const openSlotMetricEl = document.getElementById('metric-open-slots');
+      if (openSlotMetricEl) openSlotMetricEl.innerText = openSlotsCount;
+
+      const unpaidInvoices = state.invoices.filter(i => i.status !== 'Paid');
+      const unpaidTotal = unpaidInvoices.reduce((sum, i) => sum + Number(i.amount || 0), 0);
+      document.getElementById('metric-unpaid-amount').innerText = `$${unpaidTotal}`;
+      document.getElementById('metric-unpaid-count').innerText = `(${unpaidInvoices.length} due)`;
+
+      const currentYearMonth = `${todayObj.getFullYear()}-${pad(todayObj.getMonth() + 1)}`;
+      const paidThisMonth = state.invoices.filter(i => i.status === 'Paid' && i.date && normalizeDateString(i.date).startsWith(currentYearMonth));
+      const monthlyTotal = paidThisMonth.reduce((sum, i) => sum + Number(i.amount || 0), 0);
+      document.getElementById('metric-monthly-revenue').innerText = `$${monthlyTotal}`;
+
+      let studentCount = 0;
+      state.parents.forEach(p => {
+        studentCount += (p.athletes ? p.athletes.length : 0);
+      });
+      document.getElementById('metric-active-students').innerText = studentCount;
+      document.getElementById('metric-scheduled-lessons').innerText = state.lessons.length;
+
+      const upcomingCount = state.lessons.filter(l => normalizeDateString(l.date) >= CURRENT_SYSTEM_DATE && !l.completed).length;
+      const badge = document.getElementById('coach-upcoming-counter-badge');
+      if (badge) badge.innerText = upcomingCount;
+    }
+
+    function renderCoachRoster() {
+      const container = document.getElementById('coach-roster-directory-table');
+      if (!container) return;
+
+      let allAthletes = [];
+      state.parents.forEach(p => {
+        (p.athletes || []).forEach(a => {
+          allAthletes.push({
+            athleteId: a.id,
+            athleteName: a.name,
+            level: a.level || 'General',
+            parentEmail: p.email,
+            parentName: p.name,
+            phone: p.phone || 'N/A',
+            credits: Number(p.credits || 0).toFixed(1)
+          });
+        });
+      });
+
+      document.getElementById('roster-athlete-badge').innerText = `${allAthletes.length} Total Athletes`;
+
+      if (allAthletes.length === 0) {
+        container.innerHTML = `<p class="text-xs text-slate-400 py-6 text-center">No athletes registered yet.</p>`;
+        return;
+      }
+
+      let html = `
+        <table class="w-full text-left text-xs text-slate-700">
+          <thead class="bg-slate-50 text-slate-500 uppercase font-black tracking-wider border-b border-slate-200">
+            <tr>
+              <th class="py-3 px-4">Athlete Name</th>
+              <th class="py-3 px-4">Age / Level</th>
+              <th class="py-3 px-4">Parent / Guardian</th>
+              <th class="py-3 px-4">Phone Number</th>
+              <th class="py-3 px-4">Email</th>
+              <th class="py-3 px-4 text-right">Available Credits</th>
+              <th class="py-3 px-4 text-center">Action</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100">
+      `;
+
+      allAthletes.forEach(row => {
+        html += `
+          <tr class="hover:bg-slate-50">
+            <td class="py-3 px-4 font-black text-slate-900">${row.athleteName}</td>
+            <td class="py-3 px-4">${row.level}</td>
+            <td class="py-3 px-4 font-semibold text-slate-800">${row.parentName}</td>
+            <td class="py-3 px-4 font-medium text-slate-600">${row.phone}</td>
+            <td class="py-3 px-4 font-medium text-slate-600">${row.parentEmail}</td>
+            <td class="py-3 px-4 text-right font-black text-blue-600">${row.credits}</td>
+            <td class="py-3 px-4 text-center">
+              <button onclick="removeAthleteFromRoster('${row.parentEmail}', '${row.athleteId}', '${row.athleteName}')" class="px-2.5 py-1 rounded-lg border border-red-200 bg-red-50 hover:bg-red-100 text-red-600 font-bold text-[10px]">
+                Remove
+              </button>
+            </td>
+          </tr>
+        `;
+      });
+
+      html += `</tbody></table>`;
+      container.innerHTML = html;
+    }
+
+    async function removeAthleteFromRoster(parentEmail, athleteId, athleteName) {
+      const confirmed = confirm(`Are you sure you want to remove ${athleteName} from the directory?`);
+      if (!confirmed) return;
+
+      const parent = state.parents.find(p => String(p.email || '').trim().toLowerCase() === String(parentEmail).trim().toLowerCase());
+      if (parent && Array.isArray(parent.athletes)) {
+        parent.athletes = parent.athletes.filter(a => a.id !== athleteId && a.name !== athleteName);
+        
+        if (state.currentParent && state.currentParent.email === parent.email) {
+          state.currentParent.athletes = parent.athletes;
+          renderParentPortalSession();
+        }
+
+        saveState();
+        syncToCloud();
+        renderCoachRoster();
+        renderCoachDashboardMetrics();
+        populatePlanAthleteSelect();
+        alert(`${athleteName} has been removed from the directory.`);
+      }
+    }
+
+    // MONTHLY DRILL PLAN BUILDER LOGIC (PREVENTS TYPING WIPES)
+    function populatePlanAthleteSelect() {
+      const textInput = document.getElementById('plan-text-content');
+      const monthInput = document.getElementById('plan-target-month');
+
+      if (document.activeElement === textInput || document.activeElement === monthInput) {
+        return;
+      }
+
+      const sel = document.getElementById('plan-select-athlete');
+      if (!sel) return;
+
+      const previousSelected = sel.value;
+      sel.innerHTML = '';
+
+      let count = 0;
+      state.parents.forEach(p => {
+        (p.athletes || []).forEach(a => {
+          const opt = document.createElement('option');
+          opt.value = a.name;
+          opt.innerText = `${a.name} (${p.name})`;
+          if (a.name === previousSelected) opt.selected = true;
+          sel.appendChild(opt);
+          count++;
+        });
+      });
+
+      if (count === 0) {
+        sel.innerHTML = '<option value="">No registered athletes yet</option>';
+      } else {
+        loadSelectedAthletePlan();
+      }
+    }
+
+    function loadSelectedAthletePlan() {
+      const sel = document.getElementById('plan-select-athlete');
+      if (!sel || !sel.value) return;
+
+      const athleteName = sel.value;
+      const plan = state.athletePlans[athleteName] || {};
+
+      document.getElementById('plan-target-month').value = plan.month || `${new Date().toLocaleString('default', { month: 'long' })} ${new Date().getFullYear()} Development Plan`;
+      document.getElementById('plan-text-content').value = plan.planText || '';
+    }
+
+    function handleSaveAthleteMonthlyPlan(e) {
+      e.preventDefault();
+      const sel = document.getElementById('plan-select-athlete');
+      const athleteName = sel.value;
+      const monthTitle = document.getElementById('plan-target-month').value.trim();
+      const planContent = document.getElementById('plan-text-content').value.trim();
+
+      if (!athleteName) {
+        alert('Please select an athlete.');
+        return;
+      }
+
+      state.athletePlans[athleteName] = {
+        month: monthTitle,
+        planText: planContent,
+        updatedAt: new Date().toISOString()
+      };
+
+      saveState();
+      syncToCloud();
+      renderAthleteView();
+      alert(`Monthly drill plan published for ${athleteName}! It is now visible on their Athlete Portal.`);
+    }
+
+    // SESSION NOTES MODAL HANDLER
+    function openSessionNotesModal(lessonId) {
+      state.activeLessonIdForNotes = lessonId;
+      const lesson = state.lessons.find(l => l.id === lessonId);
+      if (!lesson) return;
+
+      document.getElementById('notes-modal-athlete-session').innerText = `${lesson.athleteName} - ${lesson.type === 'class' ? 'Fielding Class' : 'Private Lesson'}`;
+      document.getElementById('notes-modal-datetime').innerText = `${normalizeDateString(lesson.date)} @ ${formatTimeDisplay(lesson.time)}`;
+      document.getElementById('notes-modal-textarea').value = lesson.notes || '';
+
+      document.getElementById('modal-session-notes').classList.remove('hidden');
+    }
+
+    function closeSessionNotesModal() {
+      document.getElementById('modal-session-notes').classList.add('hidden');
+      state.activeLessonIdForNotes = null;
+    }
+
+    function saveSessionNotes() {
+      const lesson = state.lessons.find(l => l.id === state.activeLessonIdForNotes);
+      if (lesson) {
+        lesson.notes = document.getElementById('notes-modal-textarea').value.trim();
+        saveState();
+        syncToCloud();
+        closeSessionNotesModal();
+        renderCoachDaySummary();
+        renderCoachUpcomingSchedule(state.upcomingFilter);
+        renderAthleteView();
+        alert(`Session notes updated for ${lesson.athleteName}!`);
+      }
+    }
+
+    function switchCoachSubTab(tab) {
+      ['calendar', 'upcoming', 'roster', 'plans', 'slots', 'classes', 'direct', 'billing'].forEach(t => {
+        document.getElementById(`coach-content-${t}`).classList.add('hidden');
+        document.getElementById(`coach-tab-${t}`).className = 'px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900';
+      });
+
+      document.getElementById(`coach-content-${tab}`).classList.remove('hidden');
+      document.getElementById(`coach-tab-${tab}`).className = 'px-3 py-1.5 rounded-lg bg-white text-slate-900 shadow-sm';
+
+      if (tab === 'calendar') {
+        renderCoachCalendarDays();
+        renderCoachDaySummary();
+      }
+      if (tab === 'upcoming') renderCoachUpcomingSchedule(state.upcomingFilter);
+      if (tab === 'roster') renderCoachRoster();
+      if (tab === 'plans') populatePlanAthleteSelect();
+      if (tab === 'classes') renderCoachPublishedClasses();
+      if (tab === 'direct') populateCoachStudentSelect();
+      if (tab === 'billing') renderInvoices();
+    }
+
+    function renderCoachView() {
+      if (!document.getElementById('slot-pub-date').value) {
+        document.getElementById('slot-pub-date').value = CURRENT_SYSTEM_DATE;
+      }
+      if (!document.getElementById('class-pub-date').value) {
+        document.getElementById('class-pub-date').value = CURRENT_SYSTEM_DATE;
+      }
+      if (!document.getElementById('direct-book-date').value) {
+        document.getElementById('direct-book-date').value = CURRENT_SYSTEM_DATE;
+      }
+      renderCoachDashboardMetrics();
+      renderCoachCalendarDays();
+      renderCoachDaySummary();
+      renderCoachUpcomingSchedule(state.upcomingFilter);
+      renderCoachRoster();
+      renderCoachPublishedSlots();
+      renderCoachPublishedClasses();
+      populateCoachStudentSelect();
+      populatePlanAthleteSelect();
+    }
+
+    // COACH MASTER CALENDAR
+    function navigateCoachCalendarMonth(delta) {
+      state.currentCalMonth += delta;
+      if (state.currentCalMonth < 0) {
+        state.currentCalMonth = 11;
+        state.currentCalYear--;
+      } else if (state.currentCalMonth > 11) {
+        state.currentCalMonth = 0;
+        state.currentCalYear++;
+      }
+      renderCoachCalendarDays();
+      renderCoachDaySummary();
+    }
+
     function renderCoachCalendarDays() {
       const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
       document.getElementById('coach-calendar-header-title').innerText = `Coach Master Calendar: ${monthNames[state.currentCalMonth]} ${state.currentCalYear}`;
@@ -2204,7 +2396,6 @@
         const bookedLessons = state.lessons.filter(l => normalizeDateString(l.date) === dateStr);
         const isSelected = normalizeDateString(state.selectedCalDate) === dateStr;
         const isToday = dateStr === CURRENT_SYSTEM_DATE;
-        const isPast = dateStr < CURRENT_SYSTEM_DATE;
 
         const cell = document.createElement('button');
         cell.onclick = () => {
@@ -2221,8 +2412,6 @@
           cellStyle += 'border-blue-600 bg-blue-50/60 ring-2 ring-blue-600/30 font-bold';
         } else if (isToday) {
           cellStyle += 'border-slate-400 bg-slate-100 font-bold';
-        } else if (isPast) {
-          cellStyle += 'border-slate-200/60 bg-slate-100/75 opacity-45 cursor-not-allowed hover:border-slate-300';
         } else {
           cellStyle += 'border-slate-200 bg-white hover:border-blue-400';
         }
@@ -2230,104 +2419,16 @@
         cell.className = cellStyle;
         cell.innerHTML = `
           <div class="flex items-center justify-between w-full">
-            <span class="text-xs ${isSelected ? 'text-blue-700 font-black' : (isToday ? 'text-black font-extrabold' : (isPast ? 'text-slate-400 font-medium' : 'text-slate-700'))}">${day}</span>
+            <span class="text-xs ${isSelected ? 'text-blue-700 font-black' : (isToday ? 'text-black font-extrabold' : 'text-slate-700')}">${day}</span>
             ${isToday ? '<span class="text-[8px] bg-black text-white font-black px-1 rounded">TODAY</span>' : ''}
           </div>
           <div class="flex flex-col space-y-0.5">
             ${bookedLessons.length > 0 ? `<span class="text-[8px] bg-blue-600 text-white font-extrabold px-1 rounded-sm">${bookedLessons.length} Booked</span>` : ''}
-            ${!isPast && dayClasses.length > 0 ? `<span class="text-[8px] bg-amber-500 text-white font-extrabold px-1 rounded-sm">${dayClasses.length} Class</span>` : ''}
-            ${!isPast && dayLessons.length > 0 ? `<span class="text-[8px] bg-emerald-600 text-white font-extrabold px-1 rounded-sm">${dayLessons.length} Open</span>` : ''}
+            ${dayClasses.length > 0 ? `<span class="text-[8px] bg-amber-500 text-white font-extrabold px-1 rounded-sm">${dayClasses.length} Class</span>` : ''}
+            ${dayLessons.length > 0 ? `<span class="text-[8px] bg-emerald-600 text-white font-extrabold px-1 rounded-sm">${dayLessons.length} Open</span>` : ''}
           </div>
         `;
         grid.appendChild(cell);
-      }
-    }
-
-    // COACH ATHLETES & DIRECTORY RENDER FIX
-    function renderCoachRoster() {
-      const container = document.getElementById('coach-roster-directory-table');
-      const badge = document.getElementById('roster-athlete-badge');
-      if (!container) return;
-
-      let totalAthletesCount = 0;
-      state.parents.forEach(p => {
-        const athletes = normalizeAthletes(p.athletes);
-        totalAthletesCount += athletes.length;
-      });
-
-      if (badge) badge.innerText = `${totalAthletesCount} Total Athletes`;
-
-      if (state.parents.length === 0) {
-        container.innerHTML = `<div class="p-6 text-center text-slate-400 border border-dashed rounded-xl text-xs">No registered parents or athletes found yet.</div>`;
-        return;
-      }
-
-      let html = `
-        <table class="w-full text-left border-collapse text-xs">
-          <thead>
-            <tr class="border-b border-slate-200 text-slate-400 uppercase font-extrabold text-[10px]">
-              <th class="py-2.5 px-3">Parent / Guardian</th>
-              <th class="py-2.5 px-3">Phone</th>
-              <th class="py-2.5 px-3">Email</th>
-              <th class="py-2.5 px-3">Registered Athletes</th>
-              <th class="py-2.5 px-3">Credits</th>
-              <th class="py-2.5 px-3 text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-slate-100">
-      `;
-
-      state.parents.forEach(p => {
-        const athletes = normalizeAthletes(p.athletes);
-        const athletesStr = athletes.map(a => `<span class="inline-block bg-blue-50 text-blue-700 px-2 py-0.5 rounded-md font-bold mr-1 mb-1">${a.name} (${a.level || 'General'})</span>`).join('');
-
-        html += `
-          <tr class="hover:bg-slate-50 transition">
-            <td class="py-3 px-3 font-extrabold text-slate-900">${p.name || 'Parent'}</td>
-            <td class="py-3 px-3 text-slate-600 font-medium">${p.phone || 'N/A'}</td>
-            <td class="py-3 px-3 text-blue-600 font-semibold">${p.email || 'N/A'}</td>
-            <td class="py-3 px-3">${athletesStr || '<span class="text-slate-400">None</span>'}</td>
-            <td class="py-3 px-3 font-extrabold text-blue-600">${Number(p.credits || 0).toFixed(1)}</td>
-            <td class="py-3 px-3 text-right">
-              <button onclick="promptAddCreditToParent('${p.id}')" class="px-2.5 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold rounded-lg text-[11px] mr-1">
-                + Credit
-              </button>
-              <button onclick="deleteParentAccount('${p.id}')" class="text-red-600 hover:text-red-800 font-bold text-[11px]">
-                Remove
-              </button>
-            </td>
-          </tr>
-        `;
-      });
-
-      html += `</tbody></table>`;
-      container.innerHTML = html;
-    }
-
-    function promptAddCreditToParent(parentId) {
-      const p = state.parents.find(item => item.id === parentId);
-      if (!p) return;
-      const input = prompt(`Add credits to ${p.name}'s account (Current: ${p.credits}):`, "1");
-      if (input !== null && !isNaN(parseFloat(input))) {
-        p.credits = Number(p.credits || 0) + parseFloat(input);
-        saveState();
-        syncToCloud();
-        renderCoachRoster();
-        renderCoachDashboardMetrics();
-        alert(`Successfully added ${input} credit(s) to ${p.name}.`);
-      }
-    }
-
-    function deleteParentAccount(parentId) {
-      const p = state.parents.find(item => item.id === parentId);
-      if (!p) return;
-      const confirmed = confirm(`Are you sure you want to remove family account "${p.name}" and all associated athletes?`);
-      if (confirmed) {
-        state.parents = state.parents.filter(item => item.id !== parentId);
-        saveState();
-        syncToCloud();
-        renderCoachRoster();
-        renderCoachDashboardMetrics();
       }
     }
 
