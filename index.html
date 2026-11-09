@@ -1106,6 +1106,41 @@
       }
     }
 
+    // COACH COMMAND CENTER SUB-TAB SWITCHING FIX
+    function switchCoachSubTab(tabName) {
+      const tabs = ['calendar', 'upcoming', 'roster', 'plans', 'slots', 'classes', 'direct', 'billing'];
+      
+      tabs.forEach(t => {
+        const contentEl = document.getElementById(`coach-content-${t}`);
+        const tabBtn = document.getElementById(`coach-tab-${t}`);
+        
+        if (contentEl) {
+          if (t === tabName) {
+            contentEl.classList.remove('hidden');
+          } else {
+            contentEl.classList.add('hidden');
+          }
+        }
+        
+        if (tabBtn) {
+          if (t === tabName) {
+            tabBtn.className = 'px-3 py-1.5 rounded-lg bg-white text-slate-900 shadow-sm flex items-center space-x-1';
+          } else {
+            tabBtn.className = 'px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 flex items-center space-x-1';
+          }
+        }
+      });
+
+      // Trigger specific renders when switching tabs
+      if (tabName === 'slots') renderCoachPublishedSlots();
+      if (tabName === 'classes') renderCoachPublishedClasses();
+      if (tabName === 'billing') renderInvoices();
+      if (tabName === 'roster') renderCoachRoster();
+      if (tabName === 'direct') populateCoachStudentSelect();
+      if (tabName === 'plans') populatePlanAthleteSelect();
+      if (tabName === 'upcoming') renderCoachUpcomingSchedule(state.upcomingFilter);
+    }
+
     // PARENT AUTHENTICATION
     function toggleParentAuthMode(mode) {
       const tabL = document.getElementById('auth-tab-login');
