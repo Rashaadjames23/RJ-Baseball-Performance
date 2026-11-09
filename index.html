@@ -1314,6 +1314,19 @@
       renderOpenSlots();
     }
 
+    // MASTER CALENDAR MONTH NAVIGATION FIX
+    function navigateCoachCalendarMonth(delta) {
+      state.currentCalMonth += delta;
+      if (state.currentCalMonth < 0) {
+        state.currentCalMonth = 11;
+        state.currentCalYear--;
+      } else if (state.currentCalMonth > 11) {
+        state.currentCalMonth = 0;
+        state.currentCalYear++;
+      }
+      renderCoachCalendarDays();
+    }
+
     function jumpToCurrentToday() {
       state.selectedCalDate = CURRENT_SYSTEM_DATE;
       const d = new Date();
@@ -2227,6 +2240,94 @@
           </div>
         `;
         grid.appendChild(cell);
+      }
+    }
+
+    // COACH ATHLETES & DIRECTORY RENDER FIX
+    function renderCoachRoster() {
+      const container = document.getElementById('coach-roster-directory-table');
+      const badge = document.getElementById('roster-athlete-badge');
+      if (!container) return;
+
+      let totalAthletesCount = 0;
+      state.parents.forEach(p => {
+        const athletes = normalizeAthletes(p.athletes);
+        totalAthletesCount += athletes.length;
+      });
+
+      if (badge) badge.innerText = `${totalAthletesCount} Total Athletes`;
+
+      if (state.parents.length === 0) {
+        container.innerHTML = `<div class="p-6 text-center text-slate-400 border border-dashed rounded-xl text-xs">No registered parents or athletes found yet.</div>`;
+        return;
+      }
+
+      let html = `
+        <table class="w-full text-left border-collapse text-xs">
+          <thead>
+            <tr class="border-b border-slate-200 text-slate-400 uppercase font-extrabold text-[10px]">
+              <th class="py-2.5 px-3">Parent / Guardian</th>
+              <th class="py-2.5 px-3">Phone</th>
+              <th class="py-2.5 px-3">Email</th>
+              <th class="py-2.5 px-3">Registered Athletes</th>
+              <th class="py-2.5 px-3">Credits</th>
+              <th class="py-2.5 px-3 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100">
+      `;
+
+      state.parents.forEach(p => {
+        const athletes = normalizeAthletes(p.athletes);
+        const athletesStr = athletes.map(a => `<span class="inline-block bg-blue-50 text-blue-700 px-2 py-0.5 rounded-md font-bold mr-1 mb-1">${a.name} (${a.level || 'General'})</span>`).join('');
+
+        html += `
+          <tr class="hover:bg-slate-50 transition">
+            <td class="py-3 px-3 font-extrabold text-slate-900">${p.name || 'Parent'}</td>
+            <td class="py-3 px-3 text-slate-600 font-medium">${p.phone || 'N/A'}</td>
+            <td class="py-3 px-3 text-blue-600 font-semibold">${p.email || 'N/A'}</td>
+            <td class="py-3 px-3">${athletesStr || '<span class="text-slate-400">None</span>'}</td>
+            <td class="py-3 px-3 font-extrabold text-blue-600">${Number(p.credits || 0).toFixed(1)}</td>
+            <td class="py-3 px-3 text-right">
+              <button onclick="promptAddCreditToParent('${p.id}')" class="px-2.5 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold rounded-lg text-[11px] mr-1">
+                + Credit
+              </button>
+              <button onclick="deleteParentAccount('${p.id}')" class="text-red-600 hover:text-red-800 font-bold text-[11px]">
+                Remove
+              </button>
+            </td>
+          </tr>
+        `;
+      });
+
+      html += `</tbody></table>`;
+      container.innerHTML = html;
+    }
+
+    function promptAddCreditToParent(parentId) {
+      const p = state.parents.find(item => item.id === parentId);
+      if (!p) return;
+      const input = prompt(`Add credits to ${p.name}'s account (Current: ${p.credits}):`, "1");
+      if (input !== null && !isNaN(parseFloat(input))) {
+        p.credits = Number(p.credits || 0) + parseFloat(input);
+        saveState();
+        syncToCloud();
+        renderCoachRoster();
+        renderCoachDashboardMetrics();
+        alert(`Successfully added ${input} credit(s) to ${p.name}.`);
+      }
+    }
+
+    function deleteParentAccount(parentId) {
+      const p = state.parents.find(item => item.id === parentId);
+      if (!p) return;
+      const confirmed = confirm(`Are you sure you want to remove family account "${p.name}" and all associated athletes?`);
+      if (confirmed) {
+        state.parents = state.parents.filter(item => item.id !== parentId);
+        saveState();
+        syncToCloud();
+        renderCoachRoster();
+        renderCoachDashboardMetrics();
       }
     }
 
