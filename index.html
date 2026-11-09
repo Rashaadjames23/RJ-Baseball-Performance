@@ -363,7 +363,7 @@
     <!-- ========================================== -->
     <!-- 3. INSTRUCTOR COMMAND CENTER (COACH ONLY)   -->
     <!-- ========================================== -->
-    <div id="view-instructor" class="space-y-6 hidden">
+    <div id="view-instructor" class="space-y-6 hidden relative z-10">
       
       <!-- STAT BUBBLES -->
       <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
@@ -400,13 +400,13 @@
         </div>
       </div>
 
-      <!-- Command Center Sub-Navbar -->
-      <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm flex flex-wrap items-center justify-between gap-4">
+      <!-- Command Center Sub-Navbar (Explicit Z-Index for Reliable Clicking) -->
+      <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm flex flex-wrap items-center justify-between gap-4 relative z-30">
         <div>
           <h2 class="text-xl font-black text-slate-900">Coach RJ Command Center</h2>
           <p class="text-xs text-slate-500">Manage lesson slots, fielding classes, drill plans, and payments.</p>
         </div>
-        <div class="flex items-center space-x-1 bg-slate-100 p-1 rounded-xl text-xs font-bold">
+        <div class="flex flex-wrap items-center gap-1 bg-slate-100 p-1 rounded-xl text-xs font-bold">
           <button id="coach-tab-calendar" onclick="switchCoachSubTab('calendar')" class="px-3 py-1.5 rounded-lg bg-white text-slate-900 shadow-sm">
             Master Calendar
           </button>
@@ -698,7 +698,7 @@
 
   </main>
 
-  <!-- MODAL: COACH SESSION NOTES EDITOR -->
+  <!-- MODAL: COACH SESSION NOTES EDITOR (STRICTLY HIDDEN BY DEFAULT) -->
   <div id="modal-session-notes" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-start justify-center pt-16 sm:pt-20 px-4 hidden">
     <div class="bg-white rounded-2xl border border-slate-200 max-w-md w-full p-6 shadow-2xl space-y-4">
       <div class="flex items-center justify-between border-b border-slate-100 pb-3">
@@ -722,7 +722,7 @@
     </div>
   </div>
 
-  <!-- MODAL: BOOK LESSON CONFIRMATION & STANDING TIME OPTION -->
+  <!-- MODAL: BOOK LESSON CONFIRMATION & STANDING TIME OPTION (STRICTLY HIDDEN BY DEFAULT) -->
   <div id="modal-book-slot" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-start justify-center pt-16 sm:pt-20 px-4 hidden">
     <div class="bg-white rounded-2xl border border-slate-200 max-w-md w-full p-6 shadow-2xl space-y-4">
       <div class="flex items-center justify-between border-b border-slate-100 pb-3">
@@ -806,7 +806,7 @@
     </div>
   </div>
 
-  <!-- MODAL: CANCELLATION & POLICY MODAL -->
+  <!-- MODAL: CANCELLATION & POLICY MODAL (STRICTLY HIDDEN BY DEFAULT) -->
   <div id="modal-cancel-lesson" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-start justify-center pt-16 sm:pt-24 px-4 hidden">
     <div class="bg-white rounded-2xl border border-slate-200 max-w-md w-full p-6 shadow-2xl space-y-4">
       <div class="flex items-center justify-between border-b border-slate-100 pb-3">
@@ -1253,7 +1253,7 @@
       } else {
         btnW.className = 'px-3 py-1 rounded-lg bg-white text-slate-900 shadow-sm';
         btnM.className = 'px-3 py-1 rounded-lg text-slate-600 hover:text-slate-900';
-        viewM.classList.remove('hidden');
+        viewW.classList.remove('hidden');
         viewM.classList.add('hidden');
         renderCalendarWeeklyStrip();
       }
@@ -1760,12 +1760,10 @@
       const bookedDatesList = [];
 
       for (let w = 0; w < multiplier; w++) {
-        // Safe local date math prevents UTC timezone rollover
         const weekDateObj = new Date(baseY, baseM - 1, baseD + (w * 7));
         const weekDateStr = `${weekDateObj.getFullYear()}-${pad(weekDateObj.getMonth() + 1)}-${pad(weekDateObj.getDate())}`;
         bookedDatesList.push(weekDateStr);
 
-        // Remove/absorb any overlapping published slots on this exact date/time
         const existingSlot = state.publishedSlots.find(s => 
           normalizeDateString(s.date) === weekDateStr && 
           normalizeTimeString(s.time) === slotTimeNormalized &&
@@ -1787,7 +1785,6 @@
           });
         }
 
-        // Add lesson to schedule
         state.lessons.push({
           id: 'LES-' + Date.now() + '-' + w,
           slotId: finalSlotId,
